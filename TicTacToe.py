@@ -79,7 +79,7 @@ def getMove(field):
         if len(move) == 2 and move[0] in DIGITS1TO3 and move[1] in DIGITS1TO3:
             x = int(move[0]) - 1
             y = int(move[1]) - 1
-            if not isValidMove(field, x, y):
+            if isValidMove(field, x, y) is False:
                 continue
             else:
                 break
@@ -94,13 +94,8 @@ def playGame(player1Sign, player2Sign, turn):
     field = getGameField()
 
     while True:
-        # Проверка возможности продолжать игру:
-        stillPlaying = isDraw(field)
-        if not stillPlaying:
-            return field, 'draw'
-
         # Ход первого игрока:
-        elif turn == 'Игрок 1':
+        if turn == 'Игрок 1':
             drawGameField(field)
             # Проверить не победил ли второй игрок на прошлом ходу, перед ходом первого игрока:
             if isWinner(field, player2Sign):
@@ -130,6 +125,9 @@ def playGame(player1Sign, player2Sign, turn):
             else:
                 field[move[0]][move[1]] = player2Sign
             turn = 'Игрок 1'
+        # Проверка возможности продолжать игру:
+        elif not isDraw(field):
+            return field, 'draw'
 
 
 print('Добро пожаловать в игру "Крестики-нолики"')
