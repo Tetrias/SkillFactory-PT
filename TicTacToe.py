@@ -34,17 +34,13 @@ def isWinner(field, pSign):
             (field[0][2] == pSign and field[1][1] == pSign and field[2][0] == pSign))
 
 
-def isDraw(field):
-    # Проверить возможность продолжать игру:
-    pSign = '[ ]'
-    return ((field[0][0] == pSign and field[0][1] == pSign and field[0][2] == pSign) or
-            (field[1][0] == pSign and field[1][1] == pSign and field[1][2] == pSign) or
-            (field[2][0] == pSign and field[2][1] == pSign and field[2][2] == pSign) or
-            (field[0][0] == pSign and field[1][0] == pSign and field[2][0] == pSign) or
-            (field[0][1] == pSign and field[1][1] == pSign and field[2][1] == pSign) or
-            (field[0][2] == pSign and field[1][2] == pSign and field[2][2] == pSign) or
-            (field[0][0] == pSign and field[1][1] == pSign and field[2][2] == pSign) or
-            (field[0][2] == pSign and field[1][1] == pSign and field[2][0] == pSign))
+def isFieldFull(field):
+    # Проверить заполнено ли поле:
+    blank = '[ ]'
+    if blank in str(field):
+        return True
+    else:
+        return False
 
 
 def isValidMove(field, xmove, ymove):
@@ -54,7 +50,7 @@ def isValidMove(field, xmove, ymove):
 
 
 def getPlayerSign():
-    # Распределение знаков между игроками и первого хода:
+    # Случайное назначение знаков игрокам и первого хода:
     sign = ''
     while not (sign == '[X]' or sign == '[O]'):
         randomizer = random.randint(0, 1)
@@ -88,46 +84,40 @@ def getMove(field):
     return [x, y]
 
 
+def makeMove(field, playerSign, move):
+    # Выполнение хода игрока:
+    if move == 'выход':
+        print('Благодарим за игру!')
+        sys.exit()
+    else:
+        field[move[0]][move[1]] = playerSign
+
+
 def playGame(player1Sign, player2Sign, turn):
     # Основная функция для игры:
-    print(turn + ' играет за "Х" и ходит первым.')
+    print(f'{turn} играет за "Х" и ходит первым.')
     field = getGameField()
-
     while True:
-        # Ход первого игрока:
-        if turn == 'Игрок 1':
-            drawGameField(field)
-            # Проверить не победил ли второй игрок на прошлом ходу, перед ходом первого игрока:
-            if isWinner(field, player2Sign):
-                return field, 'Игрок 2'
-            print('Ход "Игрока 1"')
-            move = getMove(field)
-            # Проверить если игрок хочет выйти, если нет, завершить ход:
-            if move == 'выход':
-                print('Благодарим за игру!')
-                sys.exit()
-            else:
-                field[move[0]][move[1]] = player1Sign
-            turn = 'Игрок 2'
-
-        # Ход второго игрока
-        elif turn == 'Игрок 2':
-            drawGameField(field)
-            # Проверить не победил ли первый игрок на прошлом ходу, перед ходом второго игрока:
-            if isWinner(field, player1Sign):
-                return field, 'Игрок 1'
-            print('Ход "Игрока 2"')
-            move = getMove(field)
-            # Проверить если игрок хочет выйти, если нет, завершить ход:
-            if move == 'выход':
-                print('Благодарим за игру!')
-                sys.exit()
-            else:
-                field[move[0]][move[1]] = player2Sign
-            turn = 'Игрок 1'
-        # Проверка возможности продолжать игру:
-        elif not isDraw(field):
+        drawGameField(field)
+        # Проверка победителя или заполненности поля:
+        if isWinner(field, player1Sign):
+            return field, 'Игрок 1'
+        elif isWinner(field, player2Sign):
+            return field, 'Игрок 2'
+        elif not isFieldFull(field):
             return field, 'draw'
+        # Получение хода, совершение хода, передача хода следующему игроку:
+        else:
+            if turn == 'Игрок 1':
+                print('Ход "Игрока 1"')
+                move = getMove(field)
+                makeMove(field, player1Sign, move)
+                turn = 'Игрок 2'
+            else:
+                print('Ход "Игрока 2"')
+                move = getMove(field)
+                makeMove(field, player2Sign, move)
+                turn = 'Игрок 1'
 
 
 print('Добро пожаловать в игру "Крестики-нолики"')
