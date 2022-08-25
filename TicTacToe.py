@@ -22,16 +22,16 @@ def drawGameField(field):
         print()
 
 
-def isWinner(field, pSign):
+def isWinner(field, p_sign):
     # Проверить победителя:
-    return ((field[0][0] == pSign and field[0][1] == pSign and field[0][2] == pSign) or
-            (field[1][0] == pSign and field[1][1] == pSign and field[1][2] == pSign) or
-            (field[2][0] == pSign and field[2][1] == pSign and field[2][2] == pSign) or
-            (field[0][0] == pSign and field[1][0] == pSign and field[2][0] == pSign) or
-            (field[0][1] == pSign and field[1][1] == pSign and field[2][1] == pSign) or
-            (field[0][2] == pSign and field[1][2] == pSign and field[2][2] == pSign) or
-            (field[0][0] == pSign and field[1][1] == pSign and field[2][2] == pSign) or
-            (field[0][2] == pSign and field[1][1] == pSign and field[2][0] == pSign))
+    return ((field[0][0] == p_sign and field[0][1] == p_sign and field[0][2] == p_sign) or
+            (field[1][0] == p_sign and field[1][1] == p_sign and field[1][2] == p_sign) or
+            (field[2][0] == p_sign and field[2][1] == p_sign and field[2][2] == p_sign) or
+            (field[0][0] == p_sign and field[1][0] == p_sign and field[2][0] == p_sign) or
+            (field[0][1] == p_sign and field[1][1] == p_sign and field[2][1] == p_sign) or
+            (field[0][2] == p_sign and field[1][2] == p_sign and field[2][2] == p_sign) or
+            (field[0][0] == p_sign and field[1][1] == p_sign and field[2][2] == p_sign) or
+            (field[0][2] == p_sign and field[1][1] == p_sign and field[2][0] == p_sign))
 
 
 def isFieldFull(field):
@@ -43,9 +43,9 @@ def isFieldFull(field):
         return False
 
 
-def isValidMove(field, xmove, ymove):
+def isValidMove(field, x_move, y_move):
     # Проверить возможность хода:
-    if field[xmove][ymove] != '[ ]' or not (0 <= xmove <= 2 and 0 <= ymove <= 2):
+    if field[x_move][y_move] != '[ ]' or not (0 <= x_move <= 2 and 0 <= y_move <= 2):
         return False
 
 
@@ -84,49 +84,48 @@ def getMove(field):
     return [x, y]
 
 
-def makeMove(field, playerSign, move):
+def makeMove(field, player_sign):
     # Выполнение хода игрока:
+    move = getMove(field)
     if move == 'выход':
         print('Благодарим за игру!')
         sys.exit()
     else:
-        field[move[0]][move[1]] = playerSign
+        field[move[0]][move[1]] = player_sign
 
 
-def playGame(player1Sign, player2Sign, turn):
+def playGame(player_1_sign, player_2_sign, player_turn):
     # Основная функция для игры:
-    print(f'{turn} играет за "Х" и ходит первым.')
+    print(f'{player_turn} играет за "Х" и ходит первым.')
     field = getGameField()
     while True:
         drawGameField(field)
         # Проверка победителя или заполненности поля:
-        if isWinner(field, player1Sign):
+        if isWinner(field, player_1_sign):
             return field, 'Игрок 1'
-        elif isWinner(field, player2Sign):
+        elif isWinner(field, player_2_sign):
             return field, 'Игрок 2'
         elif not isFieldFull(field):
             return field, 'draw'
-        # Получение хода, совершение хода, передача хода следующему игроку:
+        # Получение хода, совершение хода и передача хода следующему игроку:
         else:
-            if turn == 'Игрок 1':
+            if player_turn == 'Игрок 1':
                 print('Ход "Игрока 1"')
-                move = getMove(field)
-                makeMove(field, player1Sign, move)
-                turn = 'Игрок 2'
+                makeMove(field, player_1_sign)
+                player_turn = 'Игрок 2'
             else:
                 print('Ход "Игрока 2"')
-                move = getMove(field)
-                makeMove(field, player2Sign, move)
-                turn = 'Игрок 1'
+                makeMove(field, player_2_sign)
+                player_turn = 'Игрок 1'
 
 
 print('Добро пожаловать в игру "Крестики-нолики"')
 
 while True:
     # Основной код в виде цикла, для возможности повтора игры по завершению.
-    player1Sign, player2Sign, turn = getPlayerSign()
+    p1, p2, turn = getPlayerSign()
     while True:
-        gameField, result = playGame(player1Sign, player2Sign, turn)
+        gameField, result = playGame(p1, p2, turn)
         drawGameField(gameField)
 
         # Вывод основных результатов.
