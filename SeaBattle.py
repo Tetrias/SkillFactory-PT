@@ -98,6 +98,7 @@ class Ship:
 class Player:
     def __init__(self):
         self.player = "" #'Человек'
+        self.available_move = Field().all_moves
 
     def get_input(self):
         if self.player == 'Человек':
@@ -129,10 +130,9 @@ class User(Player):
 # Класс для ИИ.
 class AI(Player):
     # Получаем ход компьютера.
-    @staticmethod
-    def get_ai_move():
-        available_move = Field().all_moves
-        ai_input = choice(available_move)
+
+    def get_ai_move(self):
+        ai_input = choice(self.available_move)
         return ai_input
 
     # Обрисовываем контур, если предыдущий ход попал или убил корабль.
