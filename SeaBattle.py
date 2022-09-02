@@ -1,8 +1,7 @@
 # Игра "Морской бой"
-# В процессе написания.
 from sys import exit
 from itertools import product
-from random import randint
+from random import choice
 
 
 # Классы исключений, для отлова и отображения сообщений пользователю.
@@ -22,7 +21,7 @@ class BoardUsedException(BoardException):
 
 class LengthOutException(BoardException):
     def __str__(self):
-        return "Символов меньше чем необходимых для хода."
+        return "Цифр меньше чем необходимых для хода."
 
 
 class DigitsException(BoardException):
@@ -30,19 +29,13 @@ class DigitsException(BoardException):
         return "Вводить необходимо цифры."
 
 
-class IncorrectLettersInChoice(BoardException):
-    def __str__(self):
-        return 'Необходимо указать одну из цифр: "4" - влево, "6" - вправо, 2 - вниз или 8 - вверх.'
-
-
 # Класс для проверки корректности хода игрока.
 class CheckMove:
-    def __init__(self, user_input, *args):
+    def __init__(self, user_input):
         self.x = user_input[0:1]
         self.y = user_input[1:2]
         self.r = user_input[2:3]
         self.length = len(user_input)
-        self.args = args
         self.r_digits = (2, 4, 6, 8)
 
     # Проверяем всевозможные варианты некорректного ввода и отлавливаем соответсвующее им исключение.
@@ -52,14 +45,7 @@ class CheckMove:
                 raise LengthOutException
             elif not self.x.isdigit() and not self.y.isdigit():
                 raise DigitsException
-            elif True in self.args:
-                if self.length < 3:
-                    raise LengthOutException
-                elif not self.r.isdigit():
-                    raise DigitsException
-                elif int(self.r) not in self.r_digits:
-                    raise IncorrectLettersInChoice
-            elif int(self.x) not in range(1, 6 + 1) and not int(self.y) in range(1, 6 + 1):
+            elif int(self.x) <= 0 or int(self.x) <= 0 or int(self.x) > 6 or int(self.x) > 6:
                 raise BoardOutException
         except BoardException as er:
             print(er)
@@ -75,12 +61,6 @@ class Dots:
     damaged_ship = '□'
     miss_cell = '•'
     field_size = 6
-
-
-# Класс для логики игры.
-class Game:
-    field_size = 6
-    ships_size = [3, 2, 2, 1, 1, 1, 1]
 
 
 # Класс для отрисовки поля и изменения в нем.
@@ -103,9 +83,9 @@ class Field:
         board_res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
         for i, row in enumerate(self.board):
             board_res += f"\n{i + 1} | " + " | ".join(row) + " |"
-        if current_player != 'Человек':
-            board_res = board_res.replace(Dots.ship_cell, Dots.empty_cell)
-        return board_res
+        # if current_player != 'Человек':
+        #     board_res = board_res.replace(Dots.ship_cell, Dots.empty_cell)
+        # return board_res
 
 
 # Класс для взаимодействия с кораблями.
@@ -115,22 +95,53 @@ class Ship:
 
 # Класс для логики игроков.
 class Player:
-    pass
+    def __init__(self):
+        self.player = 'Человек'
+
+    def get_input(self):
+        if self.player == 'Человек':
+            print('Сделайте ход.')
+            print('Подсказка: нужно ввести два числа, где первое - ряд, второе - столбец.')
+            print('Или введите "выход" для завершения игры.')
+            got_move = User().get_shot_input()
+            x, y = int(got_move[0]) - 1, int(got_move[1]) - 1
+        else:
+            got_move = AI().get_ai_move()
+            x, y = got_move[0], got_move[1]
+        return x, y
 
 
 # Класс для пользователя.
 class User(Player):
-    pass
+    # Получаем ход игрока и проверяем корректность ввода.
+    @staticmethod
+    def get_shot_input():
+        while True:
+            user_input = input().replace(" ", "")
+            # Отправляем в класс проверки ходов, если метод проверки не вернул True, повторить цикл.
+            check_input = CheckMove(user_input)
+            valid_input = check_input.check_exception()
+            if valid_input is True:
+                return user_input
 
 
 # Класс для ИИ.
 class AI(Player):
-    pass
+    @staticmethod
+    def get_ai_move():
+        available_move = Field().all_moves
+        ai_input = choice(available_move)
+        return ai_input
 
 
-def play_game():
-    pass
+# Класс для логики.
+class Game:
+    field_size = 6
+    ships_size = [3, 2, 2, 1, 1, 1, 1]
 
 
 while True:
+    g = Game()
+    a = Player().get_input()
+    print(a)
     break
