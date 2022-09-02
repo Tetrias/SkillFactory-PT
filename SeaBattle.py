@@ -1,5 +1,5 @@
 # Игра "Морской бой"
-# Не законченно.
+# Не закончено.
 from sys import exit
 from itertools import product
 from random import choice
@@ -60,20 +60,20 @@ class CheckMove:
 
 def all_moves():
     row, col, moves = [], [], []
-    for x in range(field_size):
-        for y in range(field_size):
+    for x in range(board_size):
+        for y in range(board_size):
             row.append(x)
             col.append(y)
             moves = list(product(row, col))
     return list(set(moves))
 
 
-def get_field():
-    field = [[empty_cell for _ in range(field_size)] for _ in range(field_size)]
+def get_board():
+    field = [[empty_cell for _ in range(board_size)] for _ in range(board_size)]
     return field
 
 
-def draw_field(field, player):
+def draw_board(field, player):
     field_res = ''
     field_res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
     for i, row in enumerate(field):
@@ -84,7 +84,7 @@ def draw_field(field, player):
 
 
 def cycle_for_getting_board():
-    field = get_field()
+    field = get_board()
     while True:
         r = random_ship(field)
         if r:
@@ -93,6 +93,12 @@ def cycle_for_getting_board():
 
 def is_space_free():
     pass
+
+
+def place_ship_on_board(ships, board):
+    for i in range(len(ships)):
+        for x, y in ships:
+            board[x][y] = ship_cell
 
 
 def random_ship(board):
@@ -105,16 +111,18 @@ def random_ship(board):
             if counter > 2000:
                 return False
             cell = choice(moves)
-            if board[cell[0]][cell[1]] == '0':
+            if board[cell[0]][cell[1]] == empty_cell:
                 if i == 1:
                     ships.append(cell)
+                    board[cell[0]][cell[1]] = ship_cell
                     break
                 else:
                     rotation = rotate_ship(i, board, cell)
                     if rotation:
                         ships.append(rotation)
+                        place_ship_on_board(rotation, board)
                         break
-    return ships
+    return board
 
 
 def rotate_ship(s_ship, board, cell):
@@ -122,7 +130,7 @@ def rotate_ship(s_ship, board, cell):
     rot_cell = []
     for i in cont:
         a = []
-        if board[int(i[0])][int(i[1])] == '0':
+        if board[int(i[0])][int(i[1])] == empty_cell:
             if s_ship == 2:
                 rot_cell.append(cell)
                 rot_cell.append(i)
@@ -130,10 +138,9 @@ def rotate_ship(s_ship, board, cell):
             else:
                 a = (i[0] - cell[0], i[1] - cell[1])
                 a = (a[0] + i[0], a[1] + i[1])
-                if 0 > a[0] or a[0] >= field_size or 0 > a[1] or a[1] >= field_size:
+                if 0 > a[0] or a[0] >= board_size or 0 > a[1] or a[1] >= board_size:
                     continue
-                elif board[a[0]][a[1]] == '0':
-                    print(a[0], a[1])
+                elif board[a[0]][a[1]] == empty_cell:
                     rot_cell.append(cell)
                     rot_cell.append(i)
                     rot_cell.append(a)
@@ -149,7 +156,7 @@ def contour(x_y, rotate=False):
     else:
         near = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
     for x, y in near:
-        if 0 > (x + row) or (x + row) >= field_size or 0 > (y + col) or (y + col) >= field_size:
+        if 0 > (x + row) or (x + row) >= board_size or 0 > (y + col) or (y + col) >= board_size:
             continue
         else:
             res += [(x + row, y + col)]
@@ -188,10 +195,10 @@ def play_game():
     player_2 = cycle_for_getting_board()
     field = player_1[0]
     ships = player_1[1]
-    print(player_1[1])
+    print(field)
 
 
-field_size = 6
+board_size = 6
 ship_size = [3, 2, 2, 1, 1, 1, 1]
 empty_cell = '0'
 ship_cell = '■'
