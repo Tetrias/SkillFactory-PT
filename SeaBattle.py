@@ -71,12 +71,13 @@ class Field:
 
     @property
     def all_moves(self):
-        row, col = [], []
+        row, col, moves = [], [], []
         for x in range(self.size):
             for y in range(self.size):
                 row.append(x)
                 col.append(y)
-        return list(product(row, col))
+                moves = list(product(row, col))
+        return list(set(moves))
 
     def __str__(self):
         board_res = ''
@@ -96,7 +97,7 @@ class Ship:
 # Класс для логики игроков.
 class Player:
     def __init__(self):
-        self.player = 'Человек'
+        self.player = "" #'Человек'
 
     def get_input(self):
         if self.player == 'Человек':
@@ -127,11 +128,31 @@ class User(Player):
 
 # Класс для ИИ.
 class AI(Player):
+    # Получаем ход компьютера.
     @staticmethod
     def get_ai_move():
         available_move = Field().all_moves
         ai_input = choice(available_move)
         return ai_input
+
+    # Обрисовываем контур, если предыдущий ход попал или убил корабль.
+    @staticmethod
+    def contour(x_y):
+        res = []
+        row, col = x_y[0], x_y[1]
+        near = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
+        for x, y in near:
+            res += [(x + row, y + col)]
+        return res
+
+    # Убираем клетки в которые ходить уже не нужно.
+    @staticmethod
+    def clean_contour(coord, cont):
+        for i in coord[:]:
+            if i in cont:
+                coord.remove(i)
+                cont.remove(i)
+        return coord
 
 
 # Класс для логики.
