@@ -68,17 +68,42 @@ def all_moves():
     return list(set(moves))
 
 
+def contour(x_y, rotate=False):
+    res = []
+    if not x_y:
+        return False
+    row, col = x_y[0], x_y[1]
+    if rotate:
+        near = [(-1, 0), (0, -1), (0, 1), (1, 0)]
+    else:
+        near = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
+    for x, y in near:
+        if 0 > (x + row) or (x + row) >= board_size or 0 > (y + col) or (y + col) >= board_size:
+            continue
+        else:
+            res += [(x + row, y + col)]
+    return res
+
+
+def clean_contour(available_move, cont):
+    for i in available_move[:]:
+        if i in cont:
+            available_move.remove(i)
+            cont.remove(i)
+    return available_move
+
+
 def get_board():
     field = [[empty_cell for _ in range(board_size)] for _ in range(board_size)]
     return field
 
 
-def draw_board(field, player):
+def draw_board(field, AI=True):
     field_res = ''
     field_res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
     for i, row in enumerate(field):
         field_res += f"\n{i + 1} | " + " | ".join(row) + " |"
-    if player:
+    if AI:
         field_res = field_res.replace(ship_cell, empty_cell)
     return field_res
 
@@ -88,11 +113,27 @@ def cycle_for_getting_board():
     while True:
         r = random_ship(field)
         if r:
-            return field, r
+            return r
 
 
-def is_space_free():
-    pass
+def get_free_space(length, moves, ship):
+    if not ship:
+        return moves
+    elif length > 1:
+        first_coord = ship[0]
+        result = contour(first_coord)
+        moves = clean_contour(moves, result)
+        second_coord = ship[1]
+        result = contour(second_coord)
+        moves = clean_contour(moves, result)
+        if length == 3:
+            third_coord = ship[2]
+            result = contour(third_coord)
+            moves = clean_contour(moves, result)
+    else:
+        result = contour(ship)
+        moves = clean_contour(moves, result)
+    return moves
 
 
 def place_ship_on_board(ships, board):
@@ -104,23 +145,28 @@ def place_ship_on_board(ships, board):
 def random_ship(board):
     moves = all_moves()
     counter = 0
-    ships = []
     for i in ship_size:
+        ship = []
         while True:
             counter += 1
             if counter > 2000:
                 return False
-            cell = choice(moves)
+            try:
+                cell = choice(moves)
+            except IndexError:
+                return False
             if board[cell[0]][cell[1]] == empty_cell:
                 if i == 1:
-                    ships.append(cell)
+                    ship = cell
                     board[cell[0]][cell[1]] = ship_cell
+                    moves = get_free_space(i, moves, ship)
                     break
                 else:
                     rotation = rotate_ship(i, board, cell)
                     if rotation:
-                        ships.append(rotation)
+                        ship = rotation
                         place_ship_on_board(rotation, board)
+                        moves = get_free_space(i, moves, ship)
                         break
     return board
 
@@ -147,30 +193,6 @@ def rotate_ship(s_ship, board, cell):
                     return rot_cell
 
 
-def contour(x_y, rotate=False):
-    moves = all_moves()
-    res = []
-    row, col = x_y[0], x_y[1]
-    if rotate:
-        near = [(-1, 0), (0, -1), (0, 1), (1, 0)]
-    else:
-        near = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)]
-    for x, y in near:
-        if 0 > (x + row) or (x + row) >= board_size or 0 > (y + col) or (y + col) >= board_size:
-            continue
-        else:
-            res += [(x + row, y + col)]
-    return res
-
-
-def clean_contour(available_move, cont):
-    for i in available_move[:]:
-        if i in cont:
-            available_move.remove(i)
-            cont.remove(i)
-    return cont
-
-
 def get_input(player, available_move):
     if player == 'Человек':
         print('Сделайте ход.')
@@ -193,9 +215,11 @@ def get_input(player, available_move):
 def play_game():
     player_1 = cycle_for_getting_board()
     player_2 = cycle_for_getting_board()
-    field = player_1[0]
-    ships = player_1[1]
-    print(field)
+    field = player_1
+    ai_field = player_2
+    print(draw_board(field, False))
+    print()
+    print(draw_board(ai_field))
 
 
 board_size = 6
