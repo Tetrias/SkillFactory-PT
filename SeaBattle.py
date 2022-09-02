@@ -1,4 +1,5 @@
 # Игра "Морской бой"
+# Не законченно.
 from sys import exit
 from itertools import product
 from random import choice
