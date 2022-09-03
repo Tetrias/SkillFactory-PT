@@ -3,7 +3,6 @@
 from sys import exit
 from itertools import product
 from random import choice
-from random import randint
 
 
 # Классы исключений, для отлова и отображения сообщений пользователю.
@@ -18,7 +17,7 @@ class BoardOutException(BoardException):
 
 class BoardUsedException(BoardException):
     def __str__(self):
-        return "Вы уже совершали ход в эту клетку или она находиться рядом с кораблем."
+        return "Вы уже совершали ход в эту."
 
 
 class LengthOutException(BoardException):
@@ -33,13 +32,13 @@ class DigitsException(BoardException):
 
 # Класс для проверки корректности хода игрока.
 class CheckMove:
-    def __init__(self, user_input):
+    def __init__(self, user_input, field):
         self.x = user_input[0:1]
         self.y = user_input[1:2]
         self.r = user_input[2:3]
         self.length = len(user_input)
         self.r_digits = (2, 4, 6, 8)
-        self.moves = all_moves()
+        self.field = field
 
     # Проверяем всевозможные варианты некорректного ввода и отлавливаем соответсвующее им исключение.
     def check_exception(self):
@@ -50,7 +49,8 @@ class CheckMove:
                 raise DigitsException
             elif int(self.x) <= 0 or int(self.x) <= 0 or int(self.x) > 6 or int(self.x) > 6:
                 raise BoardOutException
-            elif (int(self.x), int(self.y)) not in self.moves:
+            elif self.field[int(self.x) - 1][int(self.y) - 1] == damaged_ship or \
+                    self.field[int(self.x) - 1][int(self.y) - 1] == destroyed_ship:
                 raise BoardUsedException
         except BoardException as er:
             print(er)
@@ -145,7 +145,6 @@ def random_ship(board):
     moves = all_moves()
     counter = 0
     for i in ship_pool:
-        ship = []
         while True:
             counter += 1
             if counter > 2000:
@@ -156,16 +155,14 @@ def random_ship(board):
                 return False
             if board[cell[0]][cell[1]] == empty_cell:
                 if i == 1:
-                    ship = cell
                     board[cell[0]][cell[1]] = ship_cell
-                    moves = get_free_space(i, moves, ship)
+                    moves = get_free_space(i, moves, cell)
                     break
                 else:
                     rotation = rotate_ship(i, board, cell)
                     if rotation:
-                        ship = rotation
                         place_ship_on_board(rotation, board)
-                        moves = get_free_space(i, moves, ship)
+                        moves = get_free_space(i, moves, rotation)
                         break
     return board
 
@@ -174,7 +171,6 @@ def rotate_ship(s_ship, board, cell):
     cont = contour(cell, True)
     rot_cell = []
     for i in cont:
-        a = []
         if board[int(i[0])][int(i[1])] == empty_cell:
             if s_ship == 2:
                 rot_cell.append(cell)
@@ -192,7 +188,7 @@ def rotate_ship(s_ship, board, cell):
                     return rot_cell
 
 
-def get_input(available_move, player):
+def get_input(available_move, player, field):
     if player == 'Человек':
         print('Сделайте ход.')
         print('Подсказка: нужно ввести два числа, где первое - ряд, второе - столбец.')
@@ -203,7 +199,7 @@ def get_input(available_move, player):
             if user_input == "выход":
                 print('Благодарим за игру!')
                 exit()
-            check_input = CheckMove(user_input)
+            check_input = CheckMove(user_input, field)
             valid_input = check_input.check_exception()
             if valid_input is True:
                 x, y = int(user_input[0]) - 1, int(user_input[1]) - 1
@@ -214,19 +210,30 @@ def get_input(available_move, player):
     return x, y
 
 
+def ai_logic(available_move, ai_input):
+    res = contour(ai_input)
+    available_move = clean_contour(available_move, res)
+    return available_move
+
+
 def shoot(available_move, turn, target):
-    x, y = get_input(available_move, turn)
+    x, y = get_input(available_move, turn, target)
     if target[x][y] == empty_cell:
+        target[x][y] = miss_cell
         return 'miss'
     if target[x][y] == ship_cell:
         cont = contour([x, y])
         for s_x, s_y in cont:
-            if target[s_x][s_y] == ship_cell:
+            if target[s_x][s_x] == ship_cell:
+                target[x][y] = damaged_ship
                 return 'get'
             else:
+                target[x][y] = destroyed_ship
+
                 if turn == 'Человек':
                     return True
                 else:
+                    ai_logic(available_move, (x, y))
                     return False
 
 
@@ -237,7 +244,7 @@ def play_game(player, comp):
     human_win_count, machine_win_count = 0, 0
     game_status = False
     while True:
-        print(f'{draw_board(user)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
+        print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
         result = shoot(available_move, current_player[0], next_player[1])
         if result == 'miss':
             print('Промах!')
@@ -257,7 +264,7 @@ def play_game(player, comp):
             else:
                 continue
         if game_status:
-            return current_player
+            return current_player[0]
 
 
 board_size = 6
