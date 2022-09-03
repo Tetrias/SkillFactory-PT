@@ -47,6 +47,9 @@ class CheckMove:
                 raise DigitsException
             elif int(self.x) <= 0 or int(self.x) <= 0 or int(self.x) > 6 or int(self.x) > 6:
                 raise BoardOutException
+            elif self.field[int(self.x) - 1][int(self.y) - 1] != empty_cell and\
+                    self.field[int(self.x) - 1][int(self.y) - 1] != ship_cell:
+                raise BoardUsedException
         except BoardException as er:
             print(er)
         else:
@@ -267,16 +270,27 @@ def ships_left(x, y, ships):
 
 # Функция для изменения клетки поврежденного корабля, на уничтоженные.
 def ship_destroyed(x, y, target):
-    cont = contour([x, y], True)
-    for c_x, c_y in cont:
-        if target[c_x][c_y] == damaged_ship:
-            target[c_x][c_y] = destroyed_ship
-            elem = ((c_x - x), (c_y - y))
-            elem = (elem[0] + c_x, elem[1] + c_y)
-            if 0 < elem[0] or elem[0] <= board_size or 0 < elem[1] or elem[1] <= board_size:
-                if elem == damaged_ship:
-                    target[x][y] = destroyed_ship
+    coord = []
+    while True:
+        cont = contour([x, y])
+        coord.clear()
+        for _ in range(1):
+            for c_x, c_y in cont:
+                if target[c_x][c_y] == damaged_ship:
+                    target[c_x][c_y] = destroyed_ship
+                    elem = ((c_x - x), (c_y - y))
+                    elem = (elem[0] + c_x, elem[1] + c_y)
+                    if 0 < elem[0] or elem[0] <= board_size or 0 < elem[1] or elem[1] <= board_size:
+                        if elem == damaged_ship or elem == destroyed_ship:
+                            coord.append(elem)
+                            cont.remove(elem)
+                            target[x][y] = destroyed_ship
+                elif target[c_x][c_y] == empty_cell:
+                    target[c_x][c_y] = miss_cell
+        if not coord:
             break
+        elif coord:
+            continue
     return target
 
 
@@ -286,7 +300,7 @@ def shoot(available_move, turn, target, enemy_ships):
     if (x, y) not in enemy_ships:
         target[x][y] = miss_cell
         return 'miss', enemy_ships
-    elif (x, y) in enemy_ships:
+    else:
         cont = contour([x, y], True)
         for s_x, s_y in cont:
             if target[s_x][s_y] == ship_cell:
@@ -312,8 +326,9 @@ def shoot(available_move, turn, target, enemy_ships):
                         target[x][y] = damaged_ship
                         enemy_ships = ships_left(x, y, enemy_ships)
                         return 'get', enemy_ships
-            else:
+            elif target[s_x][s_y] == miss_cell:
                 target[x][y] = destroyed_ship
+                ship_destroyed(x, y, target)
                 enemy_ships = ships_left(x, y, enemy_ships)
                 return 'kill', enemy_ships
 
@@ -324,7 +339,6 @@ def play_game():
     ai, ai_ships = cycle_for_getting_board()
     current_player, next_player = ['Человек', user, user_ships], ['Компьютер', ai, ai_ships]
     available_move = all_moves()
-    print(ai_ships)
     while True:
         print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
         result = shoot(available_move, current_player[0], next_player[1], next_player[2])
@@ -338,7 +352,7 @@ def play_game():
             continue
         elif result[0] == 'kill' or int:
             print('Убил!')
-            if not result[1]:
+            if not result[1:2]:
                 print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
                 return current_player[0]
             else:
