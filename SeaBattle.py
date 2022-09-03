@@ -102,13 +102,27 @@ def get_board():
 
 # Функция для рисования доски.
 def draw_board(board, AI=True):
-    field_res = ''
-    field_res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
+    field_res = " "
+    for i in range(board_size):
+        field_res += f" | {i+1}"
+    field_res += " |"
     for i, row in enumerate(board):
         field_res += f"\n{i + 1} | " + " | ".join(row) + " |"
     if AI:
         field_res = field_res.replace(ship_cell, empty_cell)
     return field_res
+
+
+# Функция для вывода поля.
+def print_board(one, two):
+    print('Поле компьютера:                     Поле игрока:')
+    print(f'{two[0:27]}          {one[0:27]}')
+    print(f'{two[28:55]}          {one[28:55]}')
+    print(f'{two[56:83]}          {one[56:83]}')
+    print(f'{two[84:111]}          {one[84:111]}')
+    print(f'{two[112:139]}          {one[112:139]}')
+    print(f'{two[140:167]}          {one[140:167]}')
+    print(f'{two[168:]}          {one[168:]}')
 
 
 # Функция вызывающая цикл, который повторяется до тех пор, пока корабли не будут расставлены.
@@ -340,9 +354,9 @@ def play_game():
     current_player, next_player = ['Человек', user, user_ships], ['Компьютер', ai, ai_ships]
     available_move = all_moves()
     while True:
-        print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
+        print_board(draw_board(user, False), draw_board(ai))
         result = shoot(available_move, current_player[0], next_player[1], next_player[2])
-        next_player[2] = result[1]
+        next_player[2] = result[1:2]
         if result[0] == 'miss':
             print('Промах!')
             next_player, current_player = current_player, next_player
