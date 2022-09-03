@@ -311,10 +311,7 @@ def ship_destroyed(x, y, target):
 # Функция для определения попаданий.
 def shoot(available_move, turn, target, enemy_ships):
     x, y = get_input(available_move, turn, target)
-    if (x, y) not in enemy_ships:
-        target[x][y] = miss_cell
-        return 'miss', enemy_ships
-    else:
+    if (x, y) in enemy_ships:
         cont = contour([x, y], True)
         for s_x, s_y in cont:
             if target[s_x][s_y] == ship_cell:
@@ -345,6 +342,9 @@ def shoot(available_move, turn, target, enemy_ships):
                 ship_destroyed(x, y, target)
                 enemy_ships = ships_left(x, y, enemy_ships)
                 return 'kill', enemy_ships
+    else:
+        target[x][y] = miss_cell
+        return 'miss', enemy_ships
 
 
 # Основная функция игры.
