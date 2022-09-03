@@ -46,7 +46,7 @@ class CheckMove:
         try:
             if self.length < 2:
                 raise LengthOutException
-            elif not self.x.isdigit() and not self.y.isdigit():
+            elif not self.x.isdigit() or not self.y.isdigit():
                 raise DigitsException
             elif int(self.x) <= 0 or int(self.x) <= 0 or int(self.x) > 6 or int(self.x) > 6:
                 raise BoardOutException
@@ -108,12 +108,11 @@ def draw_board(field, AI=True):
     return field_res
 
 
-def cycle_for_getting_board():
-    field = get_board()
+def cycle_for_getting_board(field):
     while True:
-        r = random_ship(field)
-        if r:
-            return r
+        board = random_ship(field)
+        if board:
+            return board
 
 
 def get_free_space(length, moves, ship):
@@ -145,7 +144,7 @@ def place_ship_on_board(ships, board):
 def random_ship(board):
     moves = all_moves()
     counter = 0
-    for i in ship_size:
+    for i in ship_pool:
         ship = []
         while True:
             counter += 1
@@ -193,14 +192,17 @@ def rotate_ship(s_ship, board, cell):
                     return rot_cell
 
 
-def get_input(player, available_move):
+def get_input(available_move, player):
     if player == 'Человек':
         print('Сделайте ход.')
         print('Подсказка: нужно ввести два числа, где первое - ряд, второе - столбец.')
         print('Или введите "выход" для завершения игры.')
         while True:
-            user_input = input().replace(" ", "")
+            user_input = input('>>> ').replace(" ", "")
             # Отправляем в класс проверки ходов, если метод проверки не вернул True, повторить цикл.
+            if user_input == "выход":
+                print('Благодарим за игру!')
+                exit()
             check_input = CheckMove(user_input)
             valid_input = check_input.check_exception()
             if valid_input is True:
@@ -212,18 +214,54 @@ def get_input(player, available_move):
     return x, y
 
 
-def play_game():
-    player_1 = cycle_for_getting_board()
-    player_2 = cycle_for_getting_board()
-    field = player_1
-    ai_field = player_2
-    print(draw_board(field, False))
-    print()
-    print(draw_board(ai_field))
+def shoot(available_move, turn, target):
+    x, y = get_input(available_move, turn)
+    if target[x][y] == empty_cell:
+        return 'miss'
+    if target[x][y] == ship_cell:
+        cont = contour([x, y])
+        for s_x, s_y in cont:
+            if target[s_x][s_y] == ship_cell:
+                return 'get'
+            else:
+                if turn == 'Человек':
+                    return True
+                else:
+                    return False
+
+
+def play_game(player, comp):
+    user, ai = cycle_for_getting_board(player), cycle_for_getting_board(comp)
+    current_player, next_player = ('Человек', user), ('Компьютер', ai)
+    available_move = all_moves()
+    human_win_count, machine_win_count = 0, 0
+    game_status = False
+    while True:
+        print(f'{draw_board(user)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
+        result = shoot(available_move, current_player[0], next_player[1])
+        if result == 'miss':
+            print('Промах!')
+            next_player, current_player = current_player, next_player
+            continue
+        elif result == 'get':
+            print('Попал!')
+            continue
+        elif result or not result:
+            print('Убил!')
+            if result:
+                human_win_count += 1
+            elif not result:
+                machine_win_count += 1
+            if human_win_count == len(ship_pool) or machine_win_count == len(ship_pool):
+                game_status = True
+            else:
+                continue
+        if game_status:
+            return current_player
 
 
 board_size = 6
-ship_size = [3, 2, 2, 1, 1, 1, 1]
+ship_pool = [3, 2, 2, 1, 1, 1, 1]
 empty_cell = '0'
 ship_cell = '■'
 destroyed_ship = 'X'
@@ -233,5 +271,11 @@ print('Добро пожаловать в игру "Морской бой"')
 print('Подождите пока корабли встанут по местам.')
 
 while True:
-    play_game()
-    break
+    player_1, player_2 = get_board(), get_board()
+    winner = play_game(player_1, player_2)
+    print(f'{winner} победил!')
+    print('Хотите сыграть ещё раз (да для повтора)?')
+    input().lower()
+    if not input().lower() == 'да':
+        print('Благодарим за игру!')
+        exit()
