@@ -58,6 +58,7 @@ class CheckMove:
             return True
 
 
+# Функция для получения всевозможных ходов.
 def all_moves():
     row, col, moves = [], [], []
     for x in range(board_size):
@@ -68,6 +69,7 @@ def all_moves():
     return list(set(moves))
 
 
+# Функция для определения контуров хода.
 def contour(x_y, rotate=False):
     res = []
     if not x_y:
@@ -85,6 +87,7 @@ def contour(x_y, rotate=False):
     return res
 
 
+# Функция удаляющая из возможных ходов те, совершать которые нет смысла.
 def clean_contour(available_move, cont):
     for i in available_move[:]:
         if i in cont:
@@ -93,28 +96,64 @@ def clean_contour(available_move, cont):
     return available_move
 
 
+# Функция для получения доски.
 def get_board():
-    field = [[empty_cell for _ in range(board_size)] for _ in range(board_size)]
-    return field
+    board = [[empty_cell for _ in range(board_size)] for _ in range(board_size)]
+    return board
 
 
-def draw_board(field, AI=True):
+# Функция для рисования доски.
+def draw_board(board, AI=True):
     field_res = ''
     field_res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
-    for i, row in enumerate(field):
+    for i, row in enumerate(board):
         field_res += f"\n{i + 1} | " + " | ".join(row) + " |"
     if AI:
         field_res = field_res.replace(ship_cell, empty_cell)
     return field_res
 
 
-def cycle_for_getting_board(field):
+# Функция вызывающая цикл, который повторяется до тех пор, пока корабли не будут расставлены.
+def cycle_for_getting_board():
     while True:
-        board = random_ship(field)
+        board = get_board()
+        board = random_ship(board)
         if board:
-            return board
+            if correct_board(board):
+                return board
 
 
+# Функция для проверки корректности расстановки кораблей.
+def correct_board(board):
+    row_found, colum_found = 0, 0
+    N = len(board[0])
+    for elem in board:
+        colum_found = 0
+        for row in range(N - 1):
+            if elem[row] == ship_cell and elem[row + 1] == ship_cell:
+                row_found += 1
+    for x in range(0, N - 1):
+        for y in range(0, N - 1):
+            if board[x][y] == ship_cell and board[x][y + 1] == ship_cell:
+                colum_found += 1
+    for i in range(1, N - 1):
+        for j in range(1, N - 1):
+            if board[i][j] == ship_cell:
+                if board[i + 1][j + 1] == ship_cell:
+                    return False
+                if board[i + 1][j - 1] == ship_cell:
+                    return False
+                if board[i - 1][j - 1] == ship_cell:
+                    return False
+                if board[i - 1][j + 1] == ship_cell:
+                    return False
+    if row_found >= 4 or colum_found >= 4:
+        return False
+    else:
+        return True
+
+
+# Функция для удаления клеток из случайного выбора расстановки кораблей.
 def get_free_space(length, moves, ship):
     if not ship:
         return moves
@@ -135,12 +174,14 @@ def get_free_space(length, moves, ship):
     return moves
 
 
+# Функция для замены пустых клеток на клетки корабля.
 def place_ship_on_board(ships, board):
     for i in range(len(ships)):
         for x, y in ships:
             board[x][y] = ship_cell
 
 
+# Основная функция для получения координат корабля.
 def random_ship(board):
     moves = all_moves()
     counter = 0
@@ -148,11 +189,11 @@ def random_ship(board):
         while True:
             counter += 1
             if counter > 2000:
-                return False
+                return None
             try:
                 cell = choice(moves)
             except IndexError:
-                return False
+                return None
             if board[cell[0]][cell[1]] == empty_cell:
                 if i == 1:
                     board[cell[0]][cell[1]] = ship_cell
@@ -167,6 +208,7 @@ def random_ship(board):
     return board
 
 
+# Функция для выбора направления корабля.
 def rotate_ship(s_ship, board, cell):
     cont = contour(cell, True)
     rot_cell = []
@@ -188,6 +230,7 @@ def rotate_ship(s_ship, board, cell):
                     return rot_cell
 
 
+# Функция для получения хода.
 def get_input(available_move, player, field):
     if player == 'Человек':
         print('Сделайте ход.')
@@ -210,12 +253,14 @@ def get_input(available_move, player, field):
     return x, y
 
 
+# Функция ИИ удаляющая ненужные ходы из возможных.
 def ai_logic(available_move, ai_input):
     res = contour(ai_input)
     available_move = clean_contour(available_move, res)
     return available_move
 
 
+# Функция для определения попаданий.
 def shoot(available_move, turn, target):
     x, y = get_input(available_move, turn, target)
     if target[x][y] == empty_cell:
@@ -237,11 +282,12 @@ def shoot(available_move, turn, target):
                     return False
 
 
-def play_game(player, comp):
-    user, ai = cycle_for_getting_board(player), cycle_for_getting_board(comp)
+# Основная функция игры.
+def play_game():
+    user, ai = cycle_for_getting_board(), cycle_for_getting_board()
     current_player, next_player = ('Человек', user), ('Компьютер', ai)
     available_move = all_moves()
-    human_win_count, machine_win_count = 0, 0
+    user_win_count, ai_win_count = 0, 0
     game_status = False
     while True:
         print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
@@ -256,10 +302,10 @@ def play_game(player, comp):
         elif result or not result:
             print('Убил!')
             if result:
-                human_win_count += 1
+                user_win_count += 1
             elif not result:
-                machine_win_count += 1
-            if human_win_count == len(ship_pool) or machine_win_count == len(ship_pool):
+                ai_win_count += 1
+            if user_win_count == len(ship_pool) or ai_win_count == len(ship_pool):
                 game_status = True
             else:
                 continue
@@ -277,9 +323,9 @@ miss_cell = '•'
 print('Добро пожаловать в игру "Морской бой"')
 print('Подождите пока корабли встанут по местам.')
 
+# Основной код, в виде цикла, для возможности повтора игры.
 while True:
-    player_1, player_2 = get_board(), get_board()
-    winner = play_game(player_1, player_2)
+    winner = play_game()
     print(f'{winner} победил!')
     print('Хотите сыграть ещё раз (да для повтора)?')
     input().lower()
