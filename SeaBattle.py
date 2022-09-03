@@ -260,35 +260,54 @@ def ai_logic(available_move, ai_input):
     return available_move
 
 
+def ships_left(target):
+    ship_found = 0
+    for row in target:
+        for elem in range(0, board_size - 1):
+            if row[elem] == ship_cell:
+                ship_found += 1
+    return ship_found
+
+
 # Функция для определения попаданий.
 def shoot(available_move, turn, target):
     x, y = get_input(available_move, turn, target)
-    if target[x][y] == empty_cell:
+    if target[x][y] == empty_cell or target[x][y] == miss_cell or target[x][y] == damaged_ship:
         target[x][y] = miss_cell
         return 'miss'
-    if target[x][y] == ship_cell:
-        cont = contour([x, y])
+    elif target[x][y] == ship_cell:
+        cont = contour([x, y], True)
+        ships = None
         for s_x, s_y in cont:
-            if target[s_x][s_x] == ship_cell:
+            if target[s_x][s_y] == ship_cell:
                 target[x][y] = damaged_ship
                 return 'get'
+            elif target[s_x][s_y] == damaged_ship or target[s_x][s_y] == destroyed_ship:
+                elem = ((s_x - x), (s_y - y))
+                elem = (elem[0] + s_x, elem[1] + s_y)
+                if 0 < elem[0] or elem[0] < board_size or 0 < elem[1] or elem[1] < board_size:
+                    if target[elem[0]][elem[1]] == ship_cell:
+                        target[x][y] = destroyed_ship
+                        if turn == 'Человек':
+                            ships = ships_left(target)
+                        else:
+                            ai_logic(available_move, (x, y))
+                            ships = ships_left(target)
+                    else:
+                        target[x][y] = damaged_ship
+                        return 'get'
             else:
                 target[x][y] = destroyed_ship
-
-                if turn == 'Человек':
-                    return True
-                else:
-                    ai_logic(available_move, (x, y))
-                    return False
+                ships = ships_left(target)
+                break
+        return ships
 
 
 # Основная функция игры.
 def play_game():
     user, ai = cycle_for_getting_board(), cycle_for_getting_board()
-    current_player, next_player = ('Человек', user), ('Компьютер', ai)
+    current_player, next_player = ('Человек1', user), ('Компьютер', ai)
     available_move = all_moves()
-    user_win_count, ai_win_count = 0, 0
-    game_status = False
     while True:
         print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
         result = shoot(available_move, current_player[0], next_player[1])
@@ -299,18 +318,12 @@ def play_game():
         elif result == 'get':
             print('Попал!')
             continue
-        elif result or not result:
+        elif result == 'kill' or int:
             print('Убил!')
-            if result:
-                user_win_count += 1
-            elif not result:
-                ai_win_count += 1
-            if user_win_count == len(ship_pool) or ai_win_count == len(ship_pool):
-                game_status = True
+            if result == 0:
+                return current_player[0]
             else:
                 continue
-        if game_status:
-            return current_player[0]
 
 
 board_size = 6
