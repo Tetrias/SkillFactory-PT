@@ -2,7 +2,6 @@
 # Не закончено.
 from sys import exit
 from itertools import product
-from itertools import chain
 from random import choice
 
 
@@ -84,12 +83,12 @@ def contour(x_y, rotate=False):
 
 
 # Функция удаляющая из возможных ходов те, совершать которые нет смысла.
-def clean_contour(available_move, cont):
-    for i in available_move[:]:
+def clean_contour(moves, cont):
+    for i in moves[:]:
         if i in cont:
-            available_move.remove(i)
+            moves.remove(i)
             cont.remove(i)
-    return available_move
+    return moves
 
 
 # Функция для получения доски.
@@ -271,7 +270,12 @@ def ship_destroyed(x, y, target):
     cont = contour([x, y], True)
     for c_x, c_y in cont:
         if target[c_x][c_y] == damaged_ship:
-            target[c_x][c_y] = damaged_ship
+            target[c_x][c_y] = destroyed_ship
+            elem = ((c_x - x), (c_y - y))
+            elem = (elem[0] + c_x, elem[1] + c_y)
+            if 0 < elem[0] or elem[0] <= board_size or 0 < elem[1] or elem[1] <= board_size:
+                if elem == damaged_ship:
+                    target[x][y] = destroyed_ship
             break
     return target
 
@@ -289,19 +293,21 @@ def shoot(available_move, turn, target, enemy_ships):
                 target[x][y] = damaged_ship
                 enemy_ships = ships_left(x, y, enemy_ships)
                 return 'get', enemy_ships
-            elif (s_x, s_y) in enemy_ships:
+            elif target[s_x][s_y] == damaged_ship:
                 elem = ((s_x - x), (s_y - y))
                 elem = (elem[0] + s_x, elem[1] + s_y)
                 if 0 < elem[0] or elem[0] < board_size or 0 < elem[1] or elem[1] < board_size:
                     if elem in enemy_ships:
                         target[x][y] = destroyed_ship
                         if turn == 'Человек':
-                            target = ship_destroyed(x, y, target)
+                            ship_destroyed(x, y, target)
                             enemy_ships = ships_left(x, y, enemy_ships)
+                            return 'kill', enemy_ships
                         else:
-                            target = ship_destroyed(x, y, target)
+                            ship_destroyed(x, y, target)
                             ai_logic(available_move, (x, y))
                             enemy_ships = ships_left(x, y, enemy_ships)
+                            return 'kill', enemy_ships
                     else:
                         target[x][y] = damaged_ship
                         enemy_ships = ships_left(x, y, enemy_ships)
@@ -310,14 +316,13 @@ def shoot(available_move, turn, target, enemy_ships):
                 target[x][y] = destroyed_ship
                 enemy_ships = ships_left(x, y, enemy_ships)
                 return 'kill', enemy_ships
-    return 'kill', enemy_ships
 
 
 # Основная функция игры.
 def play_game():
     user, user_ships = cycle_for_getting_board()
     ai, ai_ships = cycle_for_getting_board()
-    current_player, next_player = ['Человек1', user, user_ships], ['Компьютер', ai, ai_ships]
+    current_player, next_player = ['Человек', user, user_ships], ['Компьютер', ai, ai_ships]
     available_move = all_moves()
     print(ai_ships)
     while True:
@@ -334,6 +339,7 @@ def play_game():
         elif result[0] == 'kill' or int:
             print('Убил!')
             if not result[1]:
+                print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
                 return current_player[0]
             else:
                 continue
