@@ -2,6 +2,7 @@
 # Не закончено.
 from sys import exit
 from itertools import product
+from itertools import chain
 from random import choice
 
 
@@ -35,9 +36,7 @@ class CheckMove:
     def __init__(self, user_input, field):
         self.x = user_input[0:1]
         self.y = user_input[1:2]
-        self.r = user_input[2:3]
         self.length = len(user_input)
-        self.r_digits = (2, 4, 6, 8)
         self.field = field
 
     # Проверяем всевозможные варианты некорректного ввода и отлавливаем соответсвующее им исключение.
@@ -49,9 +48,6 @@ class CheckMove:
                 raise DigitsException
             elif int(self.x) <= 0 or int(self.x) <= 0 or int(self.x) > 6 or int(self.x) > 6:
                 raise BoardOutException
-            elif self.field[int(self.x) - 1][int(self.y) - 1] == damaged_ship or \
-                    self.field[int(self.x) - 1][int(self.y) - 1] == destroyed_ship:
-                raise BoardUsedException
         except BoardException as er:
             print(er)
         else:
@@ -117,10 +113,12 @@ def draw_board(board, AI=True):
 def cycle_for_getting_board():
     while True:
         board = get_board()
-        board = random_ship(board)
+        board, ships = random_ship(board)
         if board:
             if correct_board(board):
-                return board
+                list_merged = [item for sublist in ships[:3] for item in sublist], ships[3:]
+                player_ships = [item for sublist in list_merged for item in sublist]
+                return board, player_ships
 
 
 # Функция для проверки корректности расстановки кораблей.
@@ -185,17 +183,18 @@ def place_ship_on_board(ships, board):
 def random_ship(board):
     moves = all_moves()
     counter = 0
+    ships = []
     for i in ship_pool:
         while True:
             counter += 1
             if counter > 2000:
-                return None
-            try:
-                cell = choice(moves)
-            except IndexError:
-                return None
+                return None, None
+            if not moves:
+                return None, None
+            cell = choice(moves)
             if board[cell[0]][cell[1]] == empty_cell:
                 if i == 1:
+                    ships.append(cell)
                     board[cell[0]][cell[1]] = ship_cell
                     moves = get_free_space(i, moves, cell)
                     break
@@ -203,9 +202,10 @@ def random_ship(board):
                     rotation = rotate_ship(i, board, cell)
                     if rotation:
                         place_ship_on_board(rotation, board)
+                        ships.append(rotation)
                         moves = get_free_space(i, moves, rotation)
                         break
-    return board
+    return board, ships
 
 
 # Функция для выбора направления корабля.
@@ -260,67 +260,80 @@ def ai_logic(available_move, ai_input):
     return available_move
 
 
-def ships_left(target):
-    ship_found = 0
-    for row in target:
-        for elem in range(0, board_size - 1):
-            if row[elem] == ship_cell:
-                ship_found += 1
-    return ship_found
+# Функция для проверки сколько кораблей осталось.
+def ships_left(x, y, ships):
+    ships.remove((x, y))
+    return ships
+
+
+# Функция для изменения клетки поврежденного корабля, на уничтоженные.
+def ship_destroyed(x, y, target):
+    cont = contour([x, y], True)
+    for c_x, c_y in cont:
+        if target[c_x][c_y] == damaged_ship:
+            target[c_x][c_y] = damaged_ship
+            break
+    return target
 
 
 # Функция для определения попаданий.
-def shoot(available_move, turn, target):
+def shoot(available_move, turn, target, enemy_ships):
     x, y = get_input(available_move, turn, target)
-    if target[x][y] == empty_cell or target[x][y] == miss_cell or target[x][y] == damaged_ship:
+    if (x, y) not in enemy_ships:
         target[x][y] = miss_cell
-        return 'miss'
-    elif target[x][y] == ship_cell:
+        return 'miss', enemy_ships
+    elif (x, y) in enemy_ships:
         cont = contour([x, y], True)
-        ships = None
         for s_x, s_y in cont:
             if target[s_x][s_y] == ship_cell:
                 target[x][y] = damaged_ship
-                return 'get'
-            elif target[s_x][s_y] == damaged_ship or target[s_x][s_y] == destroyed_ship:
+                enemy_ships = ships_left(x, y, enemy_ships)
+                return 'get', enemy_ships
+            elif (s_x, s_y) in enemy_ships:
                 elem = ((s_x - x), (s_y - y))
                 elem = (elem[0] + s_x, elem[1] + s_y)
                 if 0 < elem[0] or elem[0] < board_size or 0 < elem[1] or elem[1] < board_size:
-                    if target[elem[0]][elem[1]] == ship_cell:
+                    if elem in enemy_ships:
                         target[x][y] = destroyed_ship
                         if turn == 'Человек':
-                            ships = ships_left(target)
+                            target = ship_destroyed(x, y, target)
+                            enemy_ships = ships_left(x, y, enemy_ships)
                         else:
+                            target = ship_destroyed(x, y, target)
                             ai_logic(available_move, (x, y))
-                            ships = ships_left(target)
+                            enemy_ships = ships_left(x, y, enemy_ships)
                     else:
                         target[x][y] = damaged_ship
-                        return 'get'
+                        enemy_ships = ships_left(x, y, enemy_ships)
+                        return 'get', enemy_ships
             else:
                 target[x][y] = destroyed_ship
-                ships = ships_left(target)
-                break
-        return ships
+                enemy_ships = ships_left(x, y, enemy_ships)
+                return 'kill', enemy_ships
+    return 'kill', enemy_ships
 
 
 # Основная функция игры.
 def play_game():
-    user, ai = cycle_for_getting_board(), cycle_for_getting_board()
-    current_player, next_player = ('Человек1', user), ('Компьютер', ai)
+    user, user_ships = cycle_for_getting_board()
+    ai, ai_ships = cycle_for_getting_board()
+    current_player, next_player = ['Человек1', user, user_ships], ['Компьютер', ai, ai_ships]
     available_move = all_moves()
+    print(ai_ships)
     while True:
         print(f'{draw_board(user, False)}\n  ' + '+' * 25 + f'\n{draw_board(ai)}')
-        result = shoot(available_move, current_player[0], next_player[1])
-        if result == 'miss':
+        result = shoot(available_move, current_player[0], next_player[1], next_player[2])
+        next_player[2] = result[1]
+        if result[0] == 'miss':
             print('Промах!')
             next_player, current_player = current_player, next_player
             continue
-        elif result == 'get':
+        elif result[0] == 'get':
             print('Попал!')
             continue
-        elif result == 'kill' or int:
+        elif result[0] == 'kill' or int:
             print('Убил!')
-            if result == 0:
+            if not result[1]:
                 return current_player[0]
             else:
                 continue
