@@ -3,10 +3,12 @@ import requests
 from settings import keys
 
 
+# Собственное исключение для проверки ввода пользователя.
 class APIException(Exception):
     pass
 
 
+# Класс проверки и вывода соответствующего исключения.
 class CheckInput:
 
     @staticmethod
@@ -36,6 +38,7 @@ class CheckInput:
         return checked_quote, checked_base, checked_num
 
 
+# Получение результата из API.
 class Parser:
 
     @staticmethod

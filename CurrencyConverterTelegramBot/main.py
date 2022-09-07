@@ -1,3 +1,4 @@
+# Телеграм бот, для конвертации валют.
 import telebot.types
 from settings import TOKEN, keys
 from extensions import APIException, CheckInput, Parser
@@ -5,6 +6,7 @@ from extensions import APIException, CheckInput, Parser
 bot = telebot.TeleBot(TOKEN)
 
 
+# Отображение инструкций, при вводе /start или /help.
 @bot.message_handler(commands=['start', 'help'])
 def start_help(message: telebot.types.Message):
 
@@ -18,6 +20,7 @@ def start_help(message: telebot.types.Message):
     bot.reply_to(message, text)
 
 
+# Отображение доступных валют, при вводе /values.
 @bot.message_handler(commands=['values'])
 def values(message: telebot.types.Message):
 
@@ -28,6 +31,7 @@ def values(message: telebot.types.Message):
     bot.reply_to(message, text)
 
 
+# Обработка сообщения пользователя. Проверка исключений, отправление запроса API, парсинг, вывод результата.
 @bot.message_handler(content_types=['text'])
 def convert(message: telebot.types.Message):
 
