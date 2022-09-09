@@ -44,7 +44,7 @@ class Parser:
     @staticmethod
     def get_price(quote, base, amount):
 
-        url = f"https://api.apilayer.com/exchangerates_data/convert?to={quote}&from={base}&amount={amount}"
+        url = f"https://api.apilayer.com/exchangerates_data/convert?to={base}&from={quote}&amount={amount}"
         payload = {}
         headers = {"apikey": "s5PS0G0igm7ngNbKgGiVk0U76M5C2M7w"}
         response = requests.request("GET", url, headers=headers, data=payload)
