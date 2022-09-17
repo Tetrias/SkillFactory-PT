@@ -1,0 +1,49 @@
+from news.models import *
+from django.contrib.auth.models import User
+
+
+user1 = User.objects.create_user('Ivan')
+user2 = User.objects.create_user('Petr')
+
+author1 = Author.objects.create(user=user1)
+author2 = Author.objects.create(user=user2)
+
+science = Category.objects.create(name = 'Наука и технологии')
+internet = Category.objects.create(name = 'Интернет')
+culture = Category.objects.create(name = 'Культура')
+society = Category.objects.create(name = 'Общество')
+
+article1 = Post.objects.create(author=author1, title='Article title 1', text='11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100')
+article2 = Post.objects.create(author=author1, title='Article title 2', text='22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222200')
+news1 = Post.objects.create(author=author2, article=False, title='News title 1', text='33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333300')
+
+article1.category.add(science)
+article2.category.add(internet)
+news1.category.add(society)
+news1.category.add(culture)
+
+comment1_art1 = Comments.objects.create(post=article1, user=user1, comment='0')
+comment2_art1 = Comments.objects.create(post=article1, user=user2, comment='1')
+comment1_art2 = Comments.objects.create(post=article2, user=user2, comment='2')
+comment1_news1 = Comments.objects.create(post=news1, user=user1, comment='3')
+
+comment1_art1.like()
+comment1_art1.dislike()
+comment2_art1.like()
+comment1_art2.like()
+comment1_news1.dislike()
+article1.like()
+article2.dislike()
+news1.dislike()
+
+author1.update_rating()
+author2.update_rating()
+
+max_rating = Author.objects.all().order_by('-rating')
+print(f'User: {max_rating[0].user.username}\nRating: {max_rating[0].rating}')
+
+top_p = Post.objects.all().order_by('-rating')
+print(f'Time: {str(top_p[0].time.strftime("%Y-%m-%d %H:%M:%S"))}\nUser: {top_p[0].author.user.username}\nRating: {top_p[0].rating}\nTitle: {top_p[0].title}\nPreview: {top_p[0].preview()}')
+
+post_com = Comments.objects.filter(post_id=top_p[0])
+print(f'Time: {post_com[0].time.strftime("%Y-%m-%d %H:%M:%S")}\nUser: {post_com[0].user.username}\nRating: {post_com[0].rating}\nCommentary: {post_com[0].comment}\n\nTime: {post_com[1].time.strftime("%Y-%m-%d %H:%M:%S")}\nUser: {post_com[1].user.username}\nRating: {post_com[1].rating}\nCommentary: {post_com[1].comment}')
