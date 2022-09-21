@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -23,11 +24,14 @@ class Author(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     article = models.BooleanField(default=True)
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.DateTimeField(auto_now=True)
     category = models.ManyToManyField(Category, through='PostCategory')
     title = models.CharField(max_length=100)
     text = models.TextField()
@@ -47,6 +51,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title.title()}: {self.preview()}'
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):
@@ -68,3 +75,6 @@ class Comments(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+    def __str__(self):
+        return f'{self.user.username.title()}: {self.comment.title()}'

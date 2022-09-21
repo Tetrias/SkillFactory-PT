@@ -7,10 +7,17 @@ Posts
 {% endblock title %}
 
 {% block content %}
-    <h1>Все статьи</h1>
+    <h1>Поиск статей</h1>
+    <form action="" method="get">
+        <div>Title: {{ filterset.form.title }}</div>
+        <div>Time: {{ filterset.form.time }}</div>
+        <div>Type: {{ filterset.form.article }}</div>
+        <div>Category: {{ filterset.form.category }}</div>
+        <input type="submit" value="Найти" />
+    </form>
     <hr>
     {% if posts %}
-        <h2>Количество статей: {{ posts|length }}</h2>
+        <h2>Количество найденных статей: {{ posts|length }}</h2>
         <table>
             <tr>
                 <td>Заголовок</td>
