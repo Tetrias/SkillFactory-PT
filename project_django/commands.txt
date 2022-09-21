@@ -15,7 +15,7 @@ society = Category.objects.create(name = 'Общество')
 
 article1 = Post.objects.create(author=author1, title='Первая статья.', text='Какой-то текст для первой статьи, необходимый для проверки того, что всё верно отображается, в том числе с помощью метода превью.')
 article2 = Post.objects.create(author=author1, title='Вторая статья.', text='Какой-то текст для второй статьи, необходимый для проверки того, что всё верно отображается, в том числе с помощью метода превью.')
-news1 = Post.objects.create(author=author2, article=False, title='Первая новостная статья.', text='Какой-то текст для первой новостной статьи, необходимый для проверки того, что всё верно отображается, в том числе с помощью метода превью.')
+news1 = Post.objects.create(author=author2, type=False, title='Первая новостная статья.', text='Какой-то текст для первой новостной статьи, необходимый для проверки того, что всё верно отображается, в том числе с помощью метода превью.')
 
 article1.category.add(science)
 article2.category.add(internet)

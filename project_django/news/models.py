@@ -5,10 +5,12 @@ from django.urls import reverse
 
 
 class Author(models.Model):
+    """Модель для автора статьи."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0)
 
     def update_rating(self):
+        """Метод для обновлений рейтинга автора."""
         comments = Comments.objects.filter(user_id=self.user).aggregate(Sum('rating'))
         post_rating = Post.objects.filter(author_id=self.id).aggregate(Sum('rating'))
         posts = Post.objects.filter(author_id=self.id).values('id')
@@ -22,6 +24,7 @@ class Author(models.Model):
 
 
 class Category(models.Model):
+    """Модель для категорий."""
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
@@ -29,8 +32,9 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    """Модель для постов."""
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    article = models.BooleanField(default=True)
+    type = models.BooleanField(default=True)
     time = models.DateTimeField(auto_now=True)
     category = models.ManyToManyField(Category, through='PostCategory')
     title = models.CharField(max_length=100)
@@ -38,14 +42,17 @@ class Post(models.Model):
     rating = models.IntegerField(default=0)
 
     def preview(self):
+        """Метод для отображения превью текста поста, ограничение в 124 символа."""
         prev = self.text[:124]
         return prev
 
     def like(self):
+        """Метод для повышения рейтинга поста."""
         self.rating += 1
         self.save()
 
     def dislike(self):
+        """Метод для понижения рейтинга поста."""
         self.rating -= 1
         self.save()
 
@@ -53,15 +60,18 @@ class Post(models.Model):
         return f'{self.title.title()}: {self.preview()}'
 
     def get_absolute_url(self):
+        """Метод для открытия страницы созданного поста, после его создания."""
         return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):
+    """Модель для связи "многие ко многим" между категориями и постами."""
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 class Comments(models.Model):
+    """Модель для комментариев от пользователей."""
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
@@ -69,10 +79,12 @@ class Comments(models.Model):
     rating = models.IntegerField(default=0)
 
     def like(self):
+        """Метод для повышения рейтинга комментария."""
         self.rating += 1
         self.save()
 
     def dislike(self):
+        """Метод для понижения рейтинга комментария."""
         self.rating -= 1
         self.save()
 

@@ -4,11 +4,13 @@ from .models import Post
 
 
 class PostForm(forms.ModelForm):
+    """Форма постов, для редактирования и создания."""
     class Meta:
         model = Post
         fields = ['author', 'title', 'text', 'category', ]
 
     def clean(self):
+        """Проверка на то, что заполнение формы было верным"""
         cleaned_data = super().clean()
         text = cleaned_data.get("text")
 
