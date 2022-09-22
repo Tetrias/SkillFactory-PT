@@ -1,8 +1,14 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 from .models import Post
 from .filters import ProductFilter
 from .forms import PostForm
+
+
+class HomeView(TemplateView):
+    """Home page"""
+    template_name = 'flatpages/default.html'
+    context_object_name = 'main'
 
 
 class PostsList(ListView):
