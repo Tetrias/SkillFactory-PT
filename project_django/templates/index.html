@@ -4,10 +4,10 @@
 <h2>Страница авторизованного пользователя {{request.user.username}}</h2>
 <div> Здесь может содержаться персональная информация для каждого пользователя </div>
 {% if is_not_author %}
-<button> <a href="accounts/upgrade/"> Хочу стать автором!</a> </button>
+<button> <a href="upgrade/"> Хочу стать автором!</a> </button>
 {% else %}
 <h2>Ваш рейтинг: {{request.Author.rating}}</h2>
 {% endif %}
 
-<button> <a href="accounts/logout/">Выйти</a> </button>
+<button> <a href="logout/">Выйти</a> </button>
 {% endblock %}

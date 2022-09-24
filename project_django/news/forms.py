@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Post
+from .models import Post, Author
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
 
@@ -9,7 +9,7 @@ class PostForm(forms.ModelForm):
     """Форма постов, для редактирования и создания."""
     class Meta:
         model = Post
-        fields = ['author', 'title', 'text', 'category', ]
+        fields = ['title', 'text', 'category', ]
 
     def clean(self):
         """Проверка на то, что заполнение формы было верным"""

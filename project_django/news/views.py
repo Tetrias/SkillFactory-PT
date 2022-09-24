@@ -34,7 +34,7 @@ def become_author(request):
     if not request.user.groups.filter(name='authors').exists():
         authors_group.user_set.add(user)
         Author.objects.create(user=user)
-    return redirect('/index/')
+    return redirect('/')
 
 
 class PostsList(ListView):
@@ -82,18 +82,16 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
     template_name = 'post_edit.html'
 
     def form_valid(self, form):
-        """Метод для изменения значения типа поста, на новостной."""
+        """
+        Метод для изменения значения типа поста, на новостной.
+        А так же автоматическое добавление, в поле автора, текущего пользователя.
+        """
         post = form.save(commit=False)
-        post.type = False
+        user = self.request.user
+        if self.request.path == '/posts/news/create/':
+            post.type = False
+        post.author = Author.objects.get(user=user)
         return super().form_valid(form)
-
-
-class ArticleCreate(PermissionRequiredMixin, CreateView):
-    """Создание статьи."""
-    permission_required = 'news.change_post'
-    form_class = PostForm
-    model = Post
-    template_name = 'post_edit.html'
 
 
 class PostUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

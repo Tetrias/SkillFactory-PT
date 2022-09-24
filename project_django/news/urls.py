@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PostsList, PostDetail, SearchPosts, NewsCreate, PostUpdate, PostDelete, ArticleCreate
+from .views import PostsList, PostDetail, SearchPosts, NewsCreate, PostUpdate, PostDelete
 
 
 urlpatterns = [
@@ -9,5 +9,5 @@ urlpatterns = [
    path('<int:pk>/edit/', PostUpdate.as_view(), name='post_edit'),
    path('<int:pk>/delete/', PostDelete.as_view(), name='post_delete'),
    path('news/create/', NewsCreate.as_view(), name='news_create'),
-   path('articles/create/', ArticleCreate.as_view(), name='article_create'),
+   path('articles/create/', NewsCreate.as_view(), name='article_create'),
 ]

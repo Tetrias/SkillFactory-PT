@@ -22,6 +22,6 @@ urlpatterns = [
     path('', HomeView.as_view(), name='main'),
     path('posts/', include('news.urls')),
     path('accounts/', include('allauth.urls')),
-    path('index/', IndexView.as_view(), name='view account'),
+    path('accounts/', IndexView.as_view(), name='view account'),
     path('accounts/upgrade/', become_author, name='become author')
 ]
