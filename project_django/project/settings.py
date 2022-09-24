@@ -152,3 +152,4 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 ACCOUNT_FORMS = {'signup': 'news.forms.BasicSignupForm'}
+SOCIALACCOUNT_FORMS = {'signup': 'news.forms.BasicSignupForm'}

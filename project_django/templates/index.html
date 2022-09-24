@@ -6,7 +6,7 @@
 {% if is_not_author %}
 <button> <a href="upgrade/"> Хочу стать автором!</a> </button>
 {% else %}
-<h2>Ваш рейтинг: {{request.Author.rating}}</h2>
+<h3>Ваш рейтинг автора: {{ rating }}</h3>
 {% endif %}
 
 <button> <a href="logout/">Выйти</a> </button>

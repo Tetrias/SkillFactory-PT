@@ -20,9 +20,11 @@ class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'index.html'
 
     def get_context_data(self, **kwargs):
-        """Проверка если пользователь в группе авторов."""
+        """Проверка если пользователь в группе авторов, если в группе, то отображаем его рейтинг."""
         context = super().get_context_data(**kwargs)
         context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
+        author = Author.objects.get(user=self.request.user)
+        context.update({'rating': author.rating})
         return context
 
 
@@ -83,7 +85,7 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         """
-        Метод для изменения значения типа поста, на новостной.
+        Метод для изменения значения типа поста.
         А так же автоматическое добавление, в поле автора, текущего пользователя.
         """
         post = form.save(commit=False)
