@@ -1,6 +1,10 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, Author
 from .filters import ProductFilter
 from .forms import PostForm
 
@@ -9,6 +13,28 @@ class HomeView(TemplateView):
     """Home page"""
     template_name = 'flatpages/default.html'
     context_object_name = 'main'
+
+
+class IndexView(LoginRequiredMixin, TemplateView):
+    """Страница авторизованного пользователя."""
+    template_name = 'index.html'
+
+    def get_context_data(self, **kwargs):
+        """Проверка если пользователь в группе авторов."""
+        context = super().get_context_data(**kwargs)
+        context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
+
+
+@login_required
+def become_author(request):
+    """Назначить пользователя автором."""
+    user = request.user
+    authors_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        authors_group.user_set.add(user)
+        Author.objects.create(user=user)
+    return redirect('/index/')
 
 
 class PostsList(ListView):
@@ -48,8 +74,9 @@ class PostDetail(DetailView):
     context_object_name = 'posts'
 
 
-class NewsCreate(CreateView):
+class NewsCreate(PermissionRequiredMixin, CreateView):
     """Создание новостной статьи."""
+    permission_required = 'news.add_post'
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
@@ -61,15 +88,17 @@ class NewsCreate(CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreate(CreateView):
+class ArticleCreate(PermissionRequiredMixin, CreateView):
     """Создание статьи."""
+    permission_required = 'news.change_post'
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Редактирование поста."""
+    permission_required = 'news.change_post'
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
