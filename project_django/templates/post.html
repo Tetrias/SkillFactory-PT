@@ -14,11 +14,17 @@ Posts
                 <td>Заголовок</td>
                 <td>Дата публикации</td>
                 <td>Текст статьи</td>
+                <td>Категории</td>
             </tr>
             <tr>
-                <td>{{ posts.title }}</td>
-                <td>{{ posts.time|date:'d M Y' }}</td>
-                <td>{{ posts.text|censor}}</td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.time|date:'d M Y' }}</td>
+                <td>{{ post.text|censor}}</td>
+                {% for category in post.category.all %}
+                    <td><a href="/posts/category/{{ category.id }}/">{{ category.name }}</a></td>
+                {% endfor %}
             </tr>
         </table>
+    <a href="edit/">Редактировать статью</a>
+    <a href="delete/">Удалить статью</a>
 {% endblock content %}

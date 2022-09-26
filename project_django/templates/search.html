@@ -26,7 +26,7 @@ Posts
             </tr>
             {% for post in posts %}
             <tr>
-                <td>{{ post.title }}</td>
+                <td><a href="/posts/{{ post.id }}/">{{ post.title }}</a></td>
                 <td>{{ post.time|date:'d M Y' }}</td>
                 <td>{{ post.text|truncatechars:20|censor }}</td>
             </tr>

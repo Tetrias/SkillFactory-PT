@@ -1,12 +1,36 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
 from django.shortcuts import redirect
+from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
-from .models import Post, Author
+from .models import Post, Author, Category, Subscribers, User
 from .filters import ProductFilter
 from .forms import PostForm
+from .models import Post, Subscribers
+
+
+@login_required
+def become_author(request):
+    """Назначить пользователя автором."""
+    user = request.user
+    authors_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        authors_group.user_set.add(user)
+        Author.objects.create(user=user)
+    return redirect('/')
+
+
+@login_required
+def subscribe(request, **kwargs):
+    """Метод для подписки на категорию новостей."""
+    user = request.user
+    category = Category.objects.get(pk=kwargs['pk'])
+    if 'unsubscribe' in request.path.split('/'):
+        Subscribers.objects.get(user=user, category=category).delete()
+    else:
+        Subscribers.objects.create(user=user, category=category)
+    return redirect(f"/posts/category/{kwargs['pk']}/")
 
 
 class HomeView(TemplateView):
@@ -23,20 +47,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
         """Проверка если пользователь в группе авторов, если в группе, то отображаем его рейтинг."""
         context = super().get_context_data(**kwargs)
         context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
-        author = Author.objects.get(user=self.request.user)
-        context.update({'rating': author.rating})
+        if Author.objects.filter(user=self.request.user).exists():
+            author = Author.objects.get(user=self.request.user)
+            context.update({'rating': author.rating})
         return context
-
-
-@login_required
-def become_author(request):
-    """Назначить пользователя автором."""
-    user = request.user
-    authors_group = Group.objects.get(name='authors')
-    if not request.user.groups.filter(name='authors').exists():
-        authors_group.user_set.add(user)
-        Author.objects.create(user=user)
-    return redirect('/')
 
 
 class PostsList(ListView):
@@ -73,7 +87,23 @@ class PostDetail(DetailView):
     """Дженерик для отображения конкретного поста."""
     model = Post
     template_name = 'post.html'
-    context_object_name = 'posts'
+    context_object_name = 'post'
+
+
+class CategoryDetail(DetailView):
+    """Дженерик для отображения страницы категории."""
+    model = Category
+    template_name = 'category.html'
+    context_object_name = 'category'
+
+    def get_context_data(self, **kwargs):
+        """."""
+        context = super().get_context_data(**kwargs)
+        print(self.model)
+        user = self.request.user
+        category = context['category']
+        context['subscribed'] = Subscribers.objects.filter(user=user, category=category).exists()
+        return context
 
 
 class NewsCreate(PermissionRequiredMixin, CreateView):
