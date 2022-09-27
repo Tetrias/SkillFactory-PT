@@ -7,6 +7,7 @@ import datetime as dt
 
 
 class LimitReset(CronJobBase):
+    """Ежедневная очистка лимита на количество постов."""
     RUN_AT_TIMES = ['00:00']
 
     schedule = Schedule(run_at_times=RUN_AT_TIMES)
@@ -17,6 +18,7 @@ class LimitReset(CronJobBase):
 
 
 class WeeklyNewsReport(CronJobBase):
+    """Еженедельная рассылка новостей пользователям."""
     RUN_EVERY_MINS = 10080
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'news.weekly_news_report'

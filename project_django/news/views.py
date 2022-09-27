@@ -97,7 +97,7 @@ class CategoryDetail(DetailView):
     context_object_name = 'category'
 
     def get_context_data(self, **kwargs):
-        """."""
+        """Метод для работы с подписками на категории."""
         context = super().get_context_data(**kwargs)
         print(self.model)
         user = self.request.user

@@ -7,6 +7,7 @@ from .models import PostCategory, Subscribers
 
 @receiver(m2m_changed, sender=PostCategory, dispatch_uid="my_unique_identifier")
 def post_notify(sender, instance, **kwargs):
+    """Рассылка новостей, в случае если был создан новый пост."""
     if kwargs['action'] == 'pre_add':
         pass
     else:

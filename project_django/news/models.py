@@ -99,4 +99,5 @@ class Subscribers(models.Model):
 
 
 class PostLimiter(models.Model):
+    """Модель для подсчета количества постов созданных пользователем."""
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
