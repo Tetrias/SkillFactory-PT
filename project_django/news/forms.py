@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Post
+from .models import Post, PostLimiter
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
 
@@ -15,7 +15,6 @@ class PostForm(forms.ModelForm):
         """Проверка на то, что заполнение формы было верным"""
         cleaned_data = super().clean()
         text = cleaned_data.get("text")
-
         if text is None:
             raise ValidationError({"text": "Содержание не может быть пустым."})
         title = cleaned_data.get("title")

@@ -96,3 +96,7 @@ class Subscribers(models.Model):
     """Модель для связи "многие ко многим", между пользователем и категориями, для рассылки новостей."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+
+class PostLimiter(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)

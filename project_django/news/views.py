@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
-from .models import Post, Author, Category, Subscribers, User
+from .models import Author, Category
 from .filters import ProductFilter
 from .forms import PostForm
-from .models import Post, Subscribers
+from .models import Post, Subscribers, PostLimiter
 
 
 @login_required
@@ -116,13 +116,18 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         """
         Метод для изменения значения типа поста.
-        А так же автоматическое добавление, в поле автора, текущего пользователя.
+        Автоматическое добавление, в поле автора, текущего пользователя.
+        А так же таймер, для ограничения на количество постов в день.
         """
         post = form.save(commit=False)
         user = self.request.user
+        post.author = Author.objects.get(user=user)
         if self.request.path == '/posts/news/create/':
             post.type = False
-        post.author = Author.objects.get(user=user)
+        if len(PostLimiter.objects.filter(author=post.author)) >= 3:
+            raise Exception("Only three posts allowed")
+        else:
+            PostLimiter.objects.create(author=post.author)
         return super().form_valid(form)
 
 

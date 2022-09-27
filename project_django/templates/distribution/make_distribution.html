@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>post_path
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <body>
-    <h2> Здравствуй, {{ username }}. Новая статья в твоём любимом разделе! </h2>
-    <h3> {{ distribution.title }} </h3>
+    <h2>Здравствуй, {{ name }}. Новая статья в твоём любимом разделе!</h2>
+    <h3><a href="{{ post_path }}"> {{ distribution.title }} </a></h3>
     <p> {{ distribution.text|truncatechars:50 }} </p>
 </body>
 </html>
