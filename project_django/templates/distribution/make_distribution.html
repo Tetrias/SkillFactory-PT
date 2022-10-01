@@ -7,7 +7,7 @@
 </head>
 <body>
     <h2>Здравствуй, {{ name }}. Новая статья в твоём любимом разделе!</h2>
-    <h3><a href="{{ post_path }}"> {{ distribution.title }} </a></h3>
-    <p> {{ distribution.text|truncatechars:50 }} </p>
+    <h3><a href="{{ post_path }}"> {{ title }} </a></h3>
+    <p> {{ text|truncatechars:50 }} </p>
 </body>
 </html>
