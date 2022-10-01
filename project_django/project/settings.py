@@ -162,12 +162,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         "LOCATION": "redis://redis:6379",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        },
-        "KEY_PREFIX": "example"
     }
 }
 

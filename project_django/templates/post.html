@@ -2,29 +2,32 @@
 
 {% load custom_filters %}
 
-{% block title %}
-Posts
-{% endblock title %}
+{% load cache %}
+    {% cache 30 header %}
+    {% block title %}
+    Posts
+    {% endblock title %}
 
-{% block content %}
-    <h1>Статья</h1>
-    <hr>
-        <table>
-            <tr>
-                <td>Заголовок</td>
-                <td>Дата публикации</td>
-                <td>Текст статьи</td>
-                <td>Категории</td>
-            </tr>
-            <tr>
-                <td>{{ post.title }}</td>
-                <td>{{ post.time|date:'d M Y' }}</td>
-                <td>{{ post.text|censor}}</td>
-                {% for category in post.category.all %}
-                    <td><a href="/posts/category/{{ category.id }}/">{{ category.name }}</a></td>
-                {% endfor %}
-            </tr>
-        </table>
-    <a href="edit/">Редактировать статью</a>
-    <a href="delete/">Удалить статью</a>
-{% endblock content %}
+    {% block content %}
+        <h1>Статья</h1>
+        <hr>
+            <table>
+                <tr>
+                    <td>Заголовок</td>
+                    <td>Дата публикации</td>
+                    <td>Текст статьи</td>
+                    <td>Категории</td>
+                </tr>
+                <tr>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.time|date:'d M Y' }}</td>
+                    <td>{{ post.text|censor}}</td>
+                    {% for category in post.category.all %}
+                        <td><a href="/posts/category/{{ category.id }}/">{{ category.name }}</a></td>
+                    {% endfor %}
+                </tr>
+            </table>
+        <a href="edit/">Редактировать статью</a>
+        <a href="delete/">Удалить статью</a>
+    {% endblock content %}
+{% endcache %}

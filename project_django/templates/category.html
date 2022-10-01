@@ -1,19 +1,21 @@
 {% extends 'flatpages/default.html' %}
-
 {% load custom_filters %}
+{% load cache %}
+    {% cache 30 header %}
 
-{% block title %}
-Posts
-{% endblock title %}
+    {% block title %}
+    Posts
+    {% endblock title %}
 
-{% block content %}
-    <h1>Категория</h1>
-    <hr>
-    <h3>{{ category.name }}</h3>
-    <p>Какое-то описание статьи.</p>
-    {% if subscribed %}
-        <button> <a href="unsubscribe/">Отписаться</a> </button>
-    {% else %}
-        <button> <a href="subscribe/">Подписаться</a> </button>
-    {% endif %}
-{% endblock content %}
+    {% block content %}
+        <h1>Категория</h1>
+        <hr>
+        <h3>{{ category.name }}</h3>
+        <p>Какое-то описание статьи.</p>
+        {% if subscribed %}
+            <button> <a href="unsubscribe/">Отписаться</a> </button>
+        {% else %}
+            <button> <a href="subscribe/">Подписаться</a> </button>
+        {% endif %}
+    {% endblock content %}
+{% endcache %}

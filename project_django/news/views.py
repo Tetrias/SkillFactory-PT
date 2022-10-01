@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
+from django.core.cache import cache
+
 from .models import Author, Category
 from .filters import ProductFilter
 from .forms import PostForm
@@ -39,9 +41,9 @@ class HomeView(TemplateView):
     context_object_name = 'main'
 
 
-class IndexView(LoginRequiredMixin, TemplateView):
+class UserView(LoginRequiredMixin, TemplateView):
     """Страница авторизованного пользователя."""
-    template_name = 'index.html'
+    template_name = 'account/UserView.html'
 
     def get_context_data(self, **kwargs):
         """Проверка если пользователь в группе авторов, если в группе, то отображаем его рейтинг."""
@@ -88,6 +90,15 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'product-{self.kwargs["pk"]}', None)
+
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'product-{self.kwargs["pk"]}', obj)
+
+        return obj
 
 
 class CategoryDetail(DetailView):
