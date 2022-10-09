@@ -23,6 +23,9 @@ class Author(models.Model):
         self.rating = comments['rating__sum'] + comments_post_rating + post_rating['rating__sum'] * 3
         self.save()
 
+    def __str__(self):
+        return self.user.username
+
 
 class Category(models.Model):
     """Модель для категорий."""
