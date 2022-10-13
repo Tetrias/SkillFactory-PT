@@ -1,25 +1,41 @@
-version: '3'
+version: '4.12'
 
 services:
+  db:
+    container_name: 'pg_container'
+    image: postgres
+    volumes:
+      - .:/var/lib/pgsql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    restart: always
   redis:
     image: redis
     restart: always
-    container_name: 'demo_app_redis'
+    container_name: 'app_redis'
     command: redis-server
     ports:
       - '6379:6379'
   web:
     build: .
     restart: always
-    container_name: 'demo_app_django'
+    container_name: 'app_django'
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/project_django
     ports:
       - '8000:8000'
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
   celery:
     build: .
-    container_name: 'demo_app_celery'
+    container_name: 'app_celery'
     command: celery -A project worker -B
     volumes:
       - .:/project_django

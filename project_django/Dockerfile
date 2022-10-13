@@ -1,8 +1,9 @@
 FROM python:3.10
 
-RUN pip install --upgrade pip
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-RUN mkdir /project_django
+RUN pip install --upgrade pip
 
 WORKDIR /project_django
 
