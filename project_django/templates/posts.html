@@ -1,5 +1,5 @@
 {% extends 'flatpages/default.html' %}
-
+{% load i18n %}
 {% load custom_filters %}
 
 {% block title %}
@@ -7,15 +7,15 @@ Posts
 {% endblock title %}
 
 {% block content %}
-    <h1>Все статьи</h1>
+    <h1>{% trans "All posts" %}</h1>
     <hr>
     {% if posts %}
-        <h2>Количество статей: {{ posts|length }}</h2>
+        <h2>{% trans "Number of posts" %}: {{ posts|length }}</h2>
         <table>
             <tr>
-                <td>Заголовок</td>
-                <td>Дата публикации</td>
-                <td>Текст статьи</td>
+                <td>{% trans "Title" %}</td>
+                <td>{% trans "Date" %}</td>
+                <td>{% trans "Text" %}</td>
             </tr>
             {% for post in posts %}
             <tr>
@@ -26,7 +26,7 @@ Posts
             {% endfor %}
         </table>
     {% else %}
-        <h2>Статей нет</h2>
+        <h2>{% trans "No posts" %}</h2>
     {% endif %}
 
     {% if page_obj.has_previous %}

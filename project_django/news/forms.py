@@ -3,6 +3,7 @@ from .models import Post
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 
 class PostForm(forms.ModelForm):
@@ -14,13 +15,13 @@ class PostForm(forms.ModelForm):
     def clean(self):
         """Проверка на то, что заполнение формы было верным"""
         cleaned_data = super().clean()
-        text = cleaned_data.get("text")
+        text = cleaned_data.get('text')
         if text is None:
             raise ValidationError({"text": "Содержание не может быть пустым."})
-        title = cleaned_data.get("title")
+        title = cleaned_data.get('title')
 
         if title is None:
-            raise ValidationError({"title": "Название не может быть пустым."})
+            raise ValidationError({'category': "Название не может быть пустым."})
 
         return cleaned_data
 

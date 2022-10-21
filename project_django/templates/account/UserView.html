@@ -2,14 +2,14 @@
 {% load cache %}
     {% cache 30 header %}
     {% block content %}
-    <h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-    <div> Здесь может содержаться персональная информация для каждого пользователя </div>
+    <h2>{% trans "Authorized User Page " %}{{request.user.username}}</h2>
+    <div>{% trans "This may contain personal information for each user." %}</div>
 {% if is_not_author %}
-<button> <a href="upgrade/"> Хочу стать автором!</a> </button>
+<button> <a href="upgrade/">{% trans "I want to be an author!" %}</a> </button>
 {% else %}
-<h3>Ваш рейтинг автора: {{ rating }}</h3>
+<h3>{% trans "Your author rating" %}: {{ rating }}</h3>
 {% endif %}
 
-<button> <a href="logout/">Выйти</a> </button>
+<button> <a href="logout/">{% trans "Logout" %}</a> </button>
 {% endblock %}
 {% endcache %}

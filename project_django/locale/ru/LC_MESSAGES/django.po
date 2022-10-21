@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-10-21 09:22+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: fpages/admin.py:11
+msgid "Advanced options"
+msgstr "Продвинутые настройки"
+
+#: news/filters.py:11
+msgid "Any"
+msgstr "Любое"
+
+#: news/filters.py:11
+msgid "Article"
+msgstr "Статья"
+
+#: news/filters.py:11
+msgid "News"
+msgstr "Новость"
+
+#: templates/account/UserView.html:5
+msgid "Authorized User Page "
+msgstr "Страница авторизованного пользователя"
+
+#: templates/account/UserView.html:6
+msgid "This may contain personal information for each user."
+msgstr "Здесь может быть персональная информация пользователя"
+
+#: templates/account/UserView.html:8
+msgid "I want to be an author!"
+msgstr "Я хочу стать автором!"
+
+#: templates/account/UserView.html:10
+msgid "Your author rating"
+msgstr "Ваш рейтинг автора"
+
+#: templates/account/UserView.html:13
+msgid "Logout"
+msgstr "Выйти"
+
+#: templates/category.html:12 templates/post.html:19 templates/search.html:15
+msgid "Category"
+msgstr "Категория"
+
+#: templates/category.html:15
+msgid "Some category description."
+msgstr "Какаое-то описание категории"
+
+#: templates/category.html:17
+msgid "Unsubscribe"
+msgstr "Отписаться"
+
+#: templates/category.html:19
+msgid "Subscribe"
+msgstr "Подписаться"
+
+#: templates/flatpages/default.html:32
+msgid "NewsPaper"
+msgstr "Газета"
+
+#: templates/flatpages/default.html:42
+msgid "Home"
+msgstr "Главная"
+
+#: templates/flatpages/default.html:45
+msgid "Posts"
+msgstr "Посты"
+
+#: templates/flatpages/default.html:48 templates/search.html:16
+msgid "Search"
+msgstr "Поиска"
+
+#: templates/flatpages/default.html:51
+msgid "Create News"
+msgstr "Создать Новость"
+
+#: templates/flatpages/default.html:54
+msgid "Create Article"
+msgstr "Создать Статью"
+
+#: templates/flatpages/default.html:57
+msgid "Account"
+msgstr "Аккаунт"
+
+#: templates/post.html:12
+msgid "Post"
+msgstr "Пост"
+
+#: templates/post.html:16 templates/posts.html:16 templates/search.html:12
+#: templates/search.html:23
+msgid "Title"
+msgstr "Название"
+
+#: templates/post.html:17 templates/posts.html:17
+msgid "Date"
+msgstr "Дата"
+
+#: templates/post.html:18 templates/posts.html:18 templates/search.html:25
+msgid "Text"
+msgstr "Текст"
+
+#: templates/post.html:30 templates/post_edit.html:4
+msgid "Edit post"
+msgstr "Редактировать пост"
+
+#: templates/post.html:31 templates/post_delete.html:4
+msgid "Delete post"
+msgstr "Удалить пост"
+
+#: templates/post_delete.html:8
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/posts.html:10
+msgid "All posts"
+msgstr "Все посты"
+
+#: templates/posts.html:13
+msgid "Number of posts"
+msgstr "Количество постов"
+
+#: templates/posts.html:29 templates/search.html:36
+msgid "No posts"
+msgstr "Нет постов"
+
+#: templates/search.html:10
+msgid "Search posts"
+msgstr "Искать посты"
+
+#: templates/search.html:13 templates/search.html:24
+msgid "Time"
+msgstr "Время"
+
+#: templates/search.html:14
+msgid "Type"
+msgstr "Тип"
+
+#: templates/search.html:20
+msgid "Number of posts found"
+msgstr "Количество найденных постов"
+
+#~ msgid "title"
+#~ msgstr "Название"
+
+#~ msgid "text"
+#~ msgstr "Текст"
+
+#~ msgid "category"
+#~ msgstr "Категория"
+
+#~ msgid "time"
+#~ msgstr "Время"
+
+#~ msgid "type"
+#~ msgstr "Тип"

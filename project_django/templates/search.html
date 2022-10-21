@@ -1,5 +1,5 @@
 {% extends 'flatpages/default.html' %}
-
+{% load i18n %}
 {% load custom_filters %}
 
 {% block title %}
@@ -7,22 +7,22 @@ Posts
 {% endblock title %}
 
 {% block content %}
-    <h1>Поиск статей</h1>
+    <h1>{% trans "Search posts" %}</h1>
     <form action="" method="get">
-        <div>Title: {{ filterset.form.title }}</div>
-        <div>Time: {{ filterset.form.time }}</div>
-        <div>Type: {{ filterset.form.type }}</div>
-        <div>Category: {{ filterset.form.category }}</div>
-        <input type="submit" value="Найти" />
+        <div>{% trans "Title" %}: {{ filterset.form.title }}</div>
+        <div>{% trans "Time" %}: {{ filterset.form.time }}</div>
+        <div>{% trans "Type" %}: {{ filterset.form.type }}</div>
+        <div>{% trans "Category" %}: {{ filterset.form.category }}</div>
+        <input type="submit" value="{% trans 'Search' %}" />
     </form>
     <hr>
     {% if posts %}
-        <h2>Количество найденных статей: {{ posts|length }}</h2>
+        <h2>{% trans "Number of posts found" %}: {{ posts|length }}</h2>
         <table>
             <tr>
-                <td>Заголовок</td>
-                <td>Дата публикации</td>
-                <td>Текст статьи</td>
+                <td>{% trans "Title" %}</td>
+                <td>{% trans "Time" %}</td>
+                <td>{% trans "Text" %}</td>
             </tr>
             {% for post in posts %}
             <tr>
@@ -33,7 +33,7 @@ Posts
             {% endfor %}
         </table>
     {% else %}
-        <h2>Статей нет</h2>
+        <h2>{% trans "No posts" %}</h2>
     {% endif %}
 
     {% if page_obj.has_previous %}

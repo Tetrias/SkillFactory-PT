@@ -1,5 +1,6 @@
 {% extends 'flatpages/default.html' %}
 {% load custom_filters %}
+{% load i18n %}
 {% load cache %}
     {% cache 30 header %}
 
@@ -8,14 +9,14 @@
     {% endblock title %}
 
     {% block content %}
-        <h1>Категория</h1>
+        <h1>{% trans "Category" %}</h1>
         <hr>
         <h3>{{ category.name }}</h3>
-        <p>Какое-то описание статьи.</p>
+        <p>{% trans "Some category description." %}</p>
         {% if subscribed %}
-            <button> <a href="unsubscribe/">Отписаться</a> </button>
+            <button> <a href="unsubscribe/">{% trans "Unsubscribe" %}</a> </button>
         {% else %}
-            <button> <a href="subscribe/">Подписаться</a> </button>
+            <button> <a href="subscribe/">{% trans "Subscribe" %}</a> </button>
         {% endif %}
     {% endblock content %}
 {% endcache %}

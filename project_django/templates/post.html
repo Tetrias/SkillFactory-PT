@@ -1,5 +1,5 @@
 {% extends 'flatpages/default.html' %}
-
+{% load i18n %}
 {% load custom_filters %}
 
 {% load cache %}
@@ -9,14 +9,14 @@
     {% endblock title %}
 
     {% block content %}
-        <h1>Статья</h1>
+        <h1>{% trans "Post" %}</h1>
         <hr>
             <table>
                 <tr>
-                    <td>Заголовок</td>
-                    <td>Дата публикации</td>
-                    <td>Текст статьи</td>
-                    <td>Категории</td>
+                    <td>{% trans "Title" %}</td>
+                    <td>{% trans "Date" %}</td>
+                    <td>{% trans "Text" %}</td>
+                    <td>{% trans "Category" %}</td>
                 </tr>
                 <tr>
                     <td>{{ post.title }}</td>
@@ -27,7 +27,7 @@
                     {% endfor %}
                 </tr>
             </table>
-        <a href="edit/">Редактировать статью</a>
-        <a href="delete/">Удалить статью</a>
+        <a href="edit/">{% trans "Edit post" %}</a>
+        <a href="delete/">{% trans "Delete post" %}</a>
     {% endblock content %}
 {% endcache %}

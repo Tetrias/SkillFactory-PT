@@ -8,7 +8,7 @@ class CustomBooleanWidget(django_filters.widgets.BooleanWidget):
     def __init__(self, *args, **kwargs):
         """Переименование выборов типа постов из булевой в более понятный."""
         super().__init__(*args, **kwargs)
-        self.choices = (("", _("Любое")), ("true", _("Статья")), ("false", _("Новость")))
+        self.choices = (("", _("Any")), ("true", _("Article")), ("false", _("News")))
 
 
 class ProductFilter(django_filters.FilterSet):

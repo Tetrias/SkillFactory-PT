@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m(cq5@67e(tmla77*$-jilrnjqks588$+7pqbbzn9)fuy4w^q('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,12 +54,14 @@ SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'news.middlewares.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -70,6 +73,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.i18n',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -82,6 +86,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
+LANGUAGES = [
+    ('en-us', 'English'),
+    ('ru', 'Русский'),
+]
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -123,14 +131,17 @@ AUTHENTICATION_BACKENDS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
 
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -168,9 +179,9 @@ ADMINS = (
 )
 
 CACHES = {
-    "default": {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        "LOCATION": "redis://redis:6379",
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
     }
 }
 
@@ -209,6 +220,9 @@ LOGGING = {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
     },
     'handlers': {
         'console': {
@@ -231,24 +245,28 @@ LOGGING = {
         },
         'general': {
             'level': 'INFO',
+            'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
             'filename': 'log_dir/general.log',
             'formatter': 'log_general',
         },
         'errors': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
             'filename': 'log_dir/errors.log',
             'formatter': 'errors',
         },
         'security': {
             'level': 'INFO',
+            'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
             'filename': 'log_dir/security.log',
             'formatter': 'log_general',
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'error_mail',
             'include_html': True,

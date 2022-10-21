@@ -19,6 +19,7 @@ from news.views import HomeView, UserView, become_author
 from django.views.decorators.cache import cache_page
 
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),
     path('admin/', admin.site.urls),
     path('', cache_page(60)(HomeView.as_view()), name='main'),
     path('posts/', include('news.urls')),
