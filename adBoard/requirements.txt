@@ -1,0 +1,7 @@
+Django~=4.1.1
+django-ckeditor~=6.5.1
+django_filter~=22.1
+psycopg2-binary~=2.9.4
+django-allauth~=0.51.0
+celery~=5.2.7
+django_redis~=5.2.0

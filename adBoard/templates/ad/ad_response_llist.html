@@ -1,0 +1,29 @@
+{% extends 'default.html' %}
+{% block content %}
+  <form action="" method="get">
+    <div>Text: {{ filterset.form.text }}</div>
+    <div>Time: {{ filterset.form.time }}</div>
+    <div>Accepted: {{ filterset.form.status }}</div>
+    <input type="submit" value="Search" />
+  </form>
+  {% for response in responses %}
+    {% if request.user == response.ad.user %}
+    <table>
+      <tr>
+        <td>Text</td>
+        <td>User</td>
+        <td>Time</td>
+      </tr>
+      <tr>
+        <td><a href="{{ response.id }}/">{{ response.text }}</a></td>
+        <td>{{ response.user }}</td>
+        <td>{{ response.time|date:'d M Y' }}</td>
+        {% if not response.status %}
+        <td><button>  <a href="{{ response.id }}/accept">Accept</a> </button>
+        <button> <a href="{{ response.id }}/decline">Decline</a> </button></td>
+        {% endif %}
+      </tr>
+    </table>
+    {% endif %}
+  {% endfor %}
+{% endblock content %}

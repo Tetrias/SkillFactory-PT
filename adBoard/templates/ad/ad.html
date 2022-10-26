@@ -1,0 +1,23 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Advertisement
+{% endblock title %}
+
+{% block content %}
+        <div>
+            <hr>
+            <h3>{{ ad.title }}</h3>
+            <hr>
+            <p>{{ ad.text|safe }}</p>
+            <hr>
+            <p>Время: {{ ad.time|date:'d M Y' }}</p>
+            <p>Категория: <a href="/ads/category/{{ ad.category.id }}/">{{ ad.category }}</a></p>
+            <hr>
+        </div>
+    {% if request.user == ad.user %}
+        <a href="edit/">Edit ad</a>
+    {% else %}
+        <a href="response/">Response to an ad</a>
+    {% endif %}
+{% endblock content %}

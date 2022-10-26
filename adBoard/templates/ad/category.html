@@ -1,0 +1,17 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Category
+{% endblock title %}
+
+{% block content %}
+    <h1>Category</h1>
+    <hr>
+    <h3>{{ category.name }}</h3>
+    <p>Some category description.</p>
+    {% if subscribed %}
+        <button> <a href="unsubscribe/">Unsubscribe</a> </button>
+    {% else %}
+        <button> <a href="subscribe/">Subscribe</a> </button>
+    {% endif %}
+{% endblock content %}

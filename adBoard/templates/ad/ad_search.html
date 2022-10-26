@@ -1,0 +1,55 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Advertisements
+{% endblock title %}
+
+{% block content %}
+    <h1>Search ads</h1>
+    <form action="" method="get">
+        <div>Title: {{ filterset.form.title }}</div>
+        <div>Time: {{ filterset.form.time }}</div>
+        <div>Category: {{ filterset.form.category }}</div>
+        <input type="submit" value="Search" />
+    </form>
+    <hr>
+    {% if ads %}
+        <h2>Number of posts found: {{ ads|length }}</h2>
+        <table>
+            <tr>
+                <td>Title</td>
+                <td>Time</td>
+                <td>Text</td>
+            </tr>
+            {% for ad in ads %}
+            <tr>
+                <td><a href="/ad/{{ ad.id }}/">{{ ad.title }}</a></td>
+                <td>{{ ad.time|date:'d M Y' }}</td>
+                <td>{{ ad.text|truncatechars:20 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>No ads</h2>
+    {% endif %}
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}

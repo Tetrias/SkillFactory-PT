@@ -1,0 +1,26 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Advertisement
+{% endblock title %}
+
+{% block content %}
+    <h1>Advertisement</h1>
+    <hr>
+        <table>
+            <tr>
+              <td>User</td>
+              <td>Time</td>
+              <td>Text</td>
+            </tr>
+            <tr>
+              <td>{{ response.user.username }}</td>
+              <td>{{ response.time|date:'d M Y' }}</td>
+              <td>{{ response.text }}</td>
+              <td><a href="/ads/{{ response.ad.id }}/">{{ response.ad }}</a></td>
+            </tr>
+        </table>
+    {% if request.user == ad.user %}
+        <a href="edit/">Edit response</a>
+    {% endif %}
+{% endblock content %}

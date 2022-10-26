@@ -1,0 +1,42 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Advertisements
+{% endblock title %}
+
+{% block content %}
+    <h1>All ads</h1>
+    <hr>
+    {% if ads %}
+        <div>
+            {% for ad in ads %}
+                <p><a href="{{ ad.id }}">{{ ad.title }}</a></p>
+                <p>{{ ad.time|date:'d M Y' }}</p>
+                <p>{{ ad.text|truncatechars:20|safe }}</p>
+            <hr>
+            {% endfor %}
+        </div>
+    {% else %}
+        <h2>No posts</h2>
+    {% endif %}
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}
