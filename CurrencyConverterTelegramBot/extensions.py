@@ -46,7 +46,7 @@ class Parser:
 
         url = f"https://api.apilayer.com/exchangerates_data/convert?to={base}&from={quote}&amount={amount}"
         payload = {}
-        headers = {"apikey": "s5PS0G0igm7ngNbKgGiVk0U76M5C2M7w"}
+        headers = {"apikey": ""}
         response = requests.request("GET", url, headers=headers, data=payload)
         result = json.loads(response.content)
 
