@@ -5,3 +5,4 @@ psycopg2-binary~=2.9.4
 django-allauth~=0.51.0
 celery~=5.2.7
 django_redis~=5.2.0
+python-dotenv~=0.21.0
