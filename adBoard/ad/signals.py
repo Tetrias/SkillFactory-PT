@@ -7,7 +7,7 @@ from .tasks import send_post_notify, send_response_notify, send_response_replay
 @receiver(post_save, sender=Advertisement)
 def post_notify(sender, instance, **kwargs):
     """Рассылка новостей, в случае изменений в модели объявлений."""
-    if not kwargs['created']:
+    if kwargs['created']:
         pass
     else:
         category = [instance.category.name, instance.category.id]
